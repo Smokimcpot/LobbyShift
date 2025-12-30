@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LobbyShift</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <style>
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #242424;
+            --accent: #00d4aa;
+            --accent-hover: #00f5c4;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --danger: #ff4757;
+            --warning: #ffa502;
+            --success: #2ed573;
+            --border: #333333;
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f5f5f5;
+            --bg-secondary: #e8e8e8;
+            --bg-card: #ffffff;
+            --accent: #00a88a;
+            --accent-hover: #00c9a7;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --danger: #e63946;
+            --warning: #f4a261;
+            --success: #2a9d8f;
+            --border: #d0d0d0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            border-color: var(--accent);
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .status-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: background 0.3s;
+        }
+        
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .status-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.active {
+            background: rgba(46, 213, 115, 0.15);
+            color: var(--success);
+        }
+        
+        .status-badge.inactive {
+            background: rgba(160, 160, 160, 0.15);
+            color: var(--text-secondary);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .status-item {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .status-item label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        
+        .status-item value {
+            display: block;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border);
+        }
+        
+        .configs-section {
+            margin-top: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .config-list {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .config-item {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .config-item:hover {
+            border-color: var(--border);
+        }
+        
+        .config-item.active {
+            border-color: var(--accent);
+        }
+        
+        .config-item.favorite {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 212, 170, 0.05) 100%);
+        }
+        
+        .config-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .favorite-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 5px;
+            opacity: 0.4;
+            transition: all 0.2s;
+        }
+        
+        .favorite-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .favorite-btn.active {
+            opacity: 1;
+        }
+        
+        .config-details {
+            flex: 1;
+        }
+        
+        .config-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .config-flag {
+            font-size: 1.4rem;
+        }
+        
+        .config-endpoint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .config-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .config-actions button {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+        
+        .upload-zone {
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent);
+            background: rgba(0, 212, 170, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            color: var(--text-secondary);
+        }
+        
+        .upload-text strong {
+            color: var(--accent);
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .setup-info {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            transition: background 0.3s;
+        }
+        
+        .setup-info h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .setup-steps {
+            color: var(--text-secondary);
+        }
+        
+        .setup-steps code {
+            background: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        
+        /* Connection Logs */
+        .logs-section {
+            margin-top: 30px;
+        }
+        
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .logs-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-icon {
+            font-size: 1.2rem;
+        }
+        
+        .log-icon.connected {
+            color: var(--success);
+        }
+        
+        .log-icon.disconnected {
+            color: var(--text-secondary);
+        }
+        
+        .log-details {
+            flex: 1;
+        }
+        
+        .log-action {
+            font-weight: 500;
+        }
+        
+        .log-config {
+            color: var(--accent);
+        }
+        
+        .log-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .log-extra {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-logs {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 40px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+.footer a:hover {
+    text-decoration: underline;
+}
+        
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 15px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .toast.error {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 25px 0;
+            }
+            
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .theme-toggle {
+                position: static;
+                margin-bottom: 20px;
+            }
+            
+            .status-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .config-item {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .config-info {
+                width: 100%;
+            }
+            
+            .config-actions {
+                width: 100%;
+            }
+            
+            .config-actions button {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                <span id="theme-icon">🌙</span>
+            </button>
+            <div class="logo">🎮 LobbyShift</div>
+            <div class="tagline">Self-hosted CoD Lobby Optimizer</div>
+        </header>
+        
+        <div class="status-card">
+            <div class="status-header">
+                <div class="status-title">VPN Status</div>
+                <div id="status-badge" class="status-badge inactive">
+                    <span class="status-dot"></span>
+                    <span id="status-text">Disconnected</span>
+                </div>
+            </div>
+            
+            <div class="status-grid">
+                <div class="status-item">
+                    <label>Active Config</label>
+                    <value id="active-config">-</value>
+                </div>
+                <div class="status-item">
+                    <label>Endpoint</label>
+                    <value id="endpoint">-</value>
+                </div>
+                <div class="status-item">
+                    <label>Last Handshake</label>
+                    <value id="handshake">-</value>
+                </div>
+                <div class="status-item">
+                    <label>Transfer</label>
+                    <value id="transfer">-</value>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button id="btn-start" class="btn-primary" onclick="startVPN()">Start VPN</button>
+                <button id="btn-stop" class="btn-danger" onclick="stopVPN()">Stop VPN</button>
+                <button class="btn-secondary" onclick="refreshStatus()">Refresh</button>
+            </div>
+        </div>
+        
+        <div class="configs-section">
+            <div class="section-header">
+                <div class="section-title">VPN Configurations</div>
+            </div>
+            
+            <div id="config-list" class="config-list">
+                <!-- Configs loaded dynamically -->
+            </div>
+            
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">
+                    <strong>Click to upload</strong> or drag & drop<br>
+                    WireGuard config file (.conf)
+                </div>
+            </div>
+            <input type="file" id="file-input" accept=".conf" onchange="uploadConfig(this.files[0])">
+        </div>
+        
+        <div class="logs-section">
+            <div class="logs-header">
+                <div class="section-title">Connection History</div>
+                <button class="btn-secondary" onclick="clearLogs()" style="padding: 8px 16px; font-size: 0.85rem;">Clear</button>
+            </div>
+            <div id="logs-container" class="logs-container">
+                <!-- Logs loaded dynamically -->
+            </div>
+        </div>
+        
+        <div class="setup-info">
+            <h3>📋 Console Setup</h3>
+            <div class="setup-steps">
+                <p>Set your PS5/Xbox network settings:</p>
+                <p style="margin-top: 10px;">
+                    <strong>Gateway:</strong> <code>{{ server_ip }}</code><br>
+                    <strong>DNS:</strong> Your router IP or <code>8.8.8.8</code>
+                </p>
+            </div>
+        </div>
+
+        <footer class="footer">
+            Made with ❤️ by <a href="https://github.com/Smokimcpot" target="_blank">Smokimcpot</a>
+        </footer>
+
+    </div>
+    
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Edit Config</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <textarea id="config-editor"></textarea>
+            <div class="actions" style="margin-top: 15px;">
+                <button class="btn-primary" onclick="saveConfig()">Save</button>
+                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Info Modal -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 id="info-modal-title">Info</h3>
+                <button class="modal-close" onclick="closeInfoModal()">&times;</button>
+            </div>
+            <div id="info-modal-body" style="color: var(--text-secondary); line-height: 1.8;"></div>
+            <div class="actions" style="margin-top: 20px;">
+                <button class="btn-primary" onclick="closeInfoModal()">Got it</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+    
+    <script>
+        let currentEditConfig = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            refreshStatus();
+            loadConfigs();
+            loadLogs();
+            setupDragDrop();
+            
+            // Auto-refresh every 10 seconds
+            setInterval(refreshStatus, 10000);
+        });
+        
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            
+            if (body.getAttribute('data-theme') === 'light') {
+                body.removeAttribute('data-theme');
+                icon.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                icon.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        
+        function loadTheme() {
+            const theme = localStorage.getItem('theme');
+            const icon = document.getElementById('theme-icon');
+            
+            if (theme === 'light') {
+                document.body.setAttribute('data-theme', 'light');
+                icon.textContent = '☀️';
+            }
+        }
+        
+        // API calls
+        async function api(endpoint, method = 'GET', body = null) {
+            const options = { method };
+            if (body) {
+                if (body instanceof FormData) {
+                    options.body = body;
+                } else {
+                    options.headers = { 'Content-Type': 'application/json' };
+                    options.body = JSON.stringify(body);
+                }
+            }
+            const response = await fetch(`/api${endpoint}`, options);
+            return response.json();
+        }
+        
+        async function refreshStatus() {
+            try {
+                const status = await api('/status');
+                updateStatusUI(status);
+            } catch (e) {
+                console.error('Failed to refresh status:', e);
+            }
+        }
+        
+        function updateStatusUI(status) {
+            const badge = document.getElementById('status-badge');
+            const statusText = document.getElementById('status-text');
+            const activeConfig = document.getElementById('active-config');
+            const endpoint = document.getElementById('endpoint');
+            const handshake = document.getElementById('handshake');
+            const transfer = document.getElementById('transfer');
+            const btnStart = document.getElementById('btn-start');
+            const btnStop = document.getElementById('btn-stop');
+            
+            if (status.active) {
+                badge.className = 'status-badge active';
+                statusText.textContent = 'Connected';
+                activeConfig.textContent = status.config || '-';
+                endpoint.textContent = status.endpoint || '-';
+                handshake.textContent = status.latest_handshake || '-';
+                transfer.textContent = status.transfer_rx && status.transfer_tx 
+                    ? `↓ ${status.transfer_rx} / ↑ ${status.transfer_tx}` 
+                    : '-';
+                btnStart.disabled = true;
+                btnStop.disabled = false;
+            } else {
+                badge.className = 'status-badge inactive';
+                statusText.textContent = 'Disconnected';
+                activeConfig.textContent = '-';
+                endpoint.textContent = '-';
+                handshake.textContent = '-';
+                transfer.textContent = '-';
+                btnStart.disabled = false;
+                btnStop.disabled = true;
+            }
+        }
+        
+        async function loadConfigs() {
+            try {
+                const data = await api('/configs');
+                renderConfigs(data.configs);
+            } catch (e) {
+                console.error('Failed to load configs:', e);
+            }
+        }
+        
+        function renderConfigs(configs) {
+            const list = document.getElementById('config-list');
+            
+            if (configs.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No configurations yet. Upload a WireGuard config to get started.</p>';
+                return;
+            }
+            
+            list.innerHTML = configs.map(config => `
+                <div class="config-item ${config.active ? 'active' : ''} ${config.favorite ? 'favorite' : ''}">
+                    <div class="config-info">
+                        <button class="favorite-btn ${config.favorite ? 'active' : ''}" onclick="toggleFavorite('${config.name}')" title="${config.favorite ? 'Remove from favorites' : 'Add to favorites'}">
+                            ${config.favorite ? '⭐' : '☆'}
+                        </button>
+                        <div class="config-details">
+                            <div class="config-name">
+                                <span class="config-flag">${config.country?.flag || '🌍'}</span>
+                                ${config.country?.name || 'Unknown'} 
+                                <span style="color: var(--text-secondary); font-weight: 400;">(${config.name})</span>
+                                ${config.active ? ' ✓' : ''}
+                            </div>
+                            <div class="config-endpoint">${config.endpoint}</div>
+                        </div>
+                    </div>
+                    <div class="config-actions">
+                        <button class="btn-primary" onclick="switchConfig('${config.name}')" ${config.active ? 'disabled' : ''}>
+                            ${config.active ? 'Active' : 'Switch'}
+                        </button>
+                        <button class="btn-secondary" onclick="editConfig('${config.name}')">Edit</button>
+                        <button class="btn-danger" onclick="deleteConfig('${config.name}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function toggleFavorite(name) {
+            try {
+                const configs = await api('/configs');
+                const config = configs.configs.find(c => c.name === name);
+                
+                if (config?.favorite) {
+                    await api(`/favorites/${name}`, 'DELETE');
+                } else {
+                    await api(`/favorites/${name}`, 'POST');
+                }
+                
+                await loadConfigs();
+            } catch (e) {
+                showToast('Failed to update favorite', 'error');
+            }
+        }
+        
+        async function loadLogs() {
+            try {
+                const data = await api('/logs');
+                renderLogs(data.logs);
+            } catch (e) {
+                console.error('Failed to load logs:', e);
+            }
+        }
+        
+        function renderLogs(logs) {
+            const container = document.getElementById('logs-container');
+            
+            if (!logs || logs.length === 0) {
+                container.innerHTML = '<div class="empty-logs">No connection history yet</div>';
+                return;
+            }
+            
+            container.innerHTML = logs.slice(0, 20).map(log => {
+                const date = new Date(log.timestamp);
+                const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                const icon = log.action === 'connected' ? '🟢' : '⚪';
+                const iconClass = log.action === 'connected' ? 'connected' : 'disconnected';
+                
+                return `
+                    <div class="log-entry">
+                        <span class="log-icon ${iconClass}">${icon}</span>
+                        <div class="log-details">
+                            <div>
+                                <span class="log-action">${log.action === 'connected' ? 'Connected to' : 'Disconnected from'}</span>
+                                <span class="log-config">${log.config || 'Unknown'}</span>
+                            </div>
+                            ${log.details ? `<div class="log-extra">${log.details}</div>` : ''}
+                            <div class="log-time">${timeStr}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        async function clearLogs() {
+            if (!confirm('Clear all connection history?')) return;
+            
+            try {
+                await api('/logs', 'DELETE');
+                await loadLogs();
+                showToast('History cleared', 'success');
+            } catch (e) {
+                showToast('Failed to clear history', 'error');
+            }
+        }
+        
+        async function startVPN() {
+            try {
+                showToast('Starting VPN...', 'success');
+                await api('/up', 'POST');
+                await refreshStatus();
+                await loadConfigs();
+                await loadLogs();
+                showToast('VPN started!', 'success');
+            } catch (e) {
+                showToast('Failed to start VPN', 'error');
+            }
+        }
+        
+        async function stopVPN() {
+            try {
+                await api('/down', 'POST');
+                await refreshStatus();
+                await loadConfigs();
+                await loadLogs();
+                showToast('VPN stopped', 'success');
+            } catch (e) {
+                showToast('Failed to stop VPN', 'error');
+            }
+        }
+        
+        async function switchConfig(name) {
+            try {
+                showToast(`Switching to ${name}...`, 'success');
+                await api(`/switch/${name}`, 'POST');
+                await refreshStatus();
+                await loadConfigs();
+                await loadLogs();
+                showModal('Restart Required', 'VPN switched successfully!<br><br>⚠️ <strong>Please restart your game</strong> for the changes to take effect.<br><br>The new region will be used for matchmaking after restarting.');
+            } catch (e) {
+                showToast('Failed to switch config', 'error');
+            }
+        }
+        
+        async function editConfig(name) {
+            try {
+                const data = await api(`/configs/${name}`);
+                currentEditConfig = name;
+                document.getElementById('modal-title').textContent = `Edit: ${name}`;
+                document.getElementById('config-editor').value = data.content;
+                document.getElementById('edit-modal').classList.add('active');
+            } catch (e) {
+                showToast('Failed to load config', 'error');
+            }
+        }
+        
+        async function saveConfig() {
+            if (!currentEditConfig) return;
+            
+            try {
+                const content = document.getElementById('config-editor').value;
+                await api(`/configs/${currentEditConfig}`, 'PUT', { content });
+                closeModal();
+                await refreshStatus();
+                showToast('Config saved!', 'success');
+            } catch (e) {
+                showToast('Failed to save config', 'error');
+            }
+        }
+        
+        async function deleteConfig(name) {
+            if (!confirm(`Delete config "${name}"?`)) return;
+            
+            try {
+                await api(`/configs/${name}`, 'DELETE');
+                await loadConfigs();
+                showToast('Config deleted', 'success');
+            } catch (e) {
+                showToast('Failed to delete config', 'error');
+            }
+        }
+        
+        async function uploadConfig(file) {
+            if (!file) return;
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                showToast('Uploading...', 'success');
+                await api('/configs', 'POST', formData);
+                await loadConfigs();
+                showToast('Config uploaded!', 'success');
+                
+                // Reset file input
+                document.getElementById('file-input').value = '';
+            } catch (e) {
+                showToast('Failed to upload config', 'error');
+            }
+        }
+        
+        function setupDragDrop() {
+            const zone = document.getElementById('upload-zone');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
+                zone.addEventListener(event, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+            
+            ['dragenter', 'dragover'].forEach(event => {
+                zone.addEventListener(event, () => zone.classList.add('dragover'));
+            });
+            
+            ['dragleave', 'drop'].forEach(event => {
+                zone.addEventListener(event, () => zone.classList.remove('dragover'));
+            });
+            
+            zone.addEventListener('drop', e => {
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.conf')) {
+                    uploadConfig(file);
+                } else {
+                    showToast('Please upload a .conf file', 'error');
+                }
+            });
+        }
+        
+        function closeModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+            currentEditConfig = null;
+        }
+        
+        function showModal(title, body) {
+            document.getElementById('info-modal-title').textContent = title;
+            document.getElementById('info-modal-body').innerHTML = body;
+            document.getElementById('info-modal').classList.add('active');
+        }
+        
+        function closeInfoModal() {
+            document.getElementById('info-modal').classList.remove('active');
+        }
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Close modal on escape
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeInfoModal();
+            }
+        });
+    </script>
+</body>
+</html>

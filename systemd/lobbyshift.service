@@ -1,0 +1,28 @@
+[Unit]
+Description=LobbyShift - CoD Lobby Optimizer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/lobbyshift
+ExecStartPre=/etc/lobbyshift/iptables-rules.sh
+ExecStart=/opt/lobbyshift/venv/bin/python -m lobbyshift.main
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+# Security
+NoNewPrivileges=false
+ProtectSystem=false
+ProtectHome=false
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=lobbyshift
+
+[Install]
+WantedBy=multi-user.target
