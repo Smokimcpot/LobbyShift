@@ -103,7 +103,6 @@ setup_directories() {
     log_info "Setting up directories..."
     
     mkdir -p $INSTALL_DIR
-    mkdir -p $INSTALL_DIR/static
     mkdir -p $CONFIG_DIR
     mkdir -p $CONFIGS_DIR
     mkdir -p /var/log/lobbyshift
@@ -175,9 +174,12 @@ setup_networking() {
     sysctl -w net.ipv4.ip_forward=1
     
     # Get local subnet
-    LOCAL_SUBNET=$(ip route | grep $INTERFACE | grep -v default | awk '{print $1}' | head -n1)
+    LOCAL_SUBNET=$(ip -o -f inet addr show $INTERFACE | awk '{print $4}' | head -n1)
     
-    if [ -z "$LOCAL_SUBNET" ]; then
+    # Convert to network address (e.g., 192.168.1.108/24 -> 192.168.1.0/24)
+    if [ -n "$LOCAL_SUBNET" ]; then
+        LOCAL_SUBNET=$(echo $LOCAL_SUBNET | sed 's/\.[0-9]*\//.0\//')
+    else
         LOCAL_SUBNET="192.168.1.0/24"
         log_warn "Could not detect subnet, using default: $LOCAL_SUBNET"
     fi
@@ -185,42 +187,67 @@ setup_networking() {
     log_info "Local subnet: $LOCAL_SUBNET"
     
     # Create iptables rules script
-    cat > $CONFIG_DIR/iptables-rules.sh << EOF
+    cat > $CONFIG_DIR/iptables-rules.sh << 'EOFSCRIPT'
 #!/bin/bash
 # LobbyShift iptables rules
 
-INTERFACE="$INTERFACE"
-LOCAL_SUBNET="$LOCAL_SUBNET"
+INTERFACE="PLACEHOLDER_INTERFACE"
+LOCAL_SUBNET="PLACEHOLDER_SUBNET"
 COD_IPS="185.34.0.0/16"
 
 # Flush existing LobbyShift rules (marked with comment)
-iptables -t nat -S | grep "lobbyshift" | while read rule; do
-    iptables -t nat \$(echo \$rule | sed 's/-A/-D/')
-done 2>/dev/null
+iptables -t nat -S 2>/dev/null | grep "lobbyshift" | while read rule; do
+    iptables -t nat $(echo $rule | sed 's/-A/-D/') 2>/dev/null
+done
 
-iptables -S | grep "lobbyshift" | while read rule; do
-    iptables \$(echo \$rule | sed 's/-A/-D/')
-done 2>/dev/null
+iptables -S 2>/dev/null | grep "lobbyshift" | while read rule; do
+    iptables $(echo $rule | sed 's/-A/-D/') 2>/dev/null
+done
 
-# NAT for VPN traffic
-if ip link show lobbyshift 2>/dev/null; then
-    iptables -t nat -A POSTROUTING -o lobbyshift -j MASQUERADE -m comment --comment "lobbyshift"
-    iptables -A FORWARD -i \$INTERFACE -o lobbyshift -s \$LOCAL_SUBNET -d \$COD_IPS -j ACCEPT -m comment --comment "lobbyshift"
-    iptables -A FORWARD -i lobbyshift -o \$INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT -m comment --comment "lobbyshift"
+# ============================================
+# GATEWAY MODE - Forward all traffic from LAN
+# ============================================
+
+# NAT for all outgoing traffic from LAN (this allows PS5/Xbox to access internet)
+iptables -t nat -A POSTROUTING -o $INTERFACE -s $LOCAL_SUBNET -j MASQUERADE -m comment --comment "lobbyshift-gateway"
+
+# Allow forwarding from LAN to internet
+iptables -A FORWARD -i $INTERFACE -s $LOCAL_SUBNET -j ACCEPT -m comment --comment "lobbyshift-gateway"
+
+# Allow return traffic
+iptables -A FORWARD -o $INTERFACE -d $LOCAL_SUBNET -m state --state RELATED,ESTABLISHED -j ACCEPT -m comment --comment "lobbyshift-gateway"
+
+# ============================================
+# VPN MODE - Route CoD traffic through VPN
+# ============================================
+
+# Only apply if VPN interface exists
+if ip link show lobbyshift &>/dev/null; then
+    # NAT for VPN traffic
+    iptables -t nat -A POSTROUTING -o lobbyshift -j MASQUERADE -m comment --comment "lobbyshift-vpn"
+    
+    # Forward CoD traffic to VPN
+    iptables -A FORWARD -i $INTERFACE -o lobbyshift -s $LOCAL_SUBNET -d $COD_IPS -j ACCEPT -m comment --comment "lobbyshift-vpn"
+    
+    # Allow return traffic from VPN
+    iptables -A FORWARD -i lobbyshift -o $INTERFACE -m state --state RELATED,ESTABLISHED -j ACCEPT -m comment --comment "lobbyshift-vpn"
 fi
 
-# NAT for regular traffic (gateway mode)
-iptables -t nat -A POSTROUTING -o \$INTERFACE -s \$LOCAL_SUBNET -j MASQUERADE -m comment --comment "lobbyshift"
-iptables -A FORWARD -i \$INTERFACE -s \$LOCAL_SUBNET -j ACCEPT -m comment --comment "lobbyshift"
-iptables -A FORWARD -o \$INTERFACE -d \$LOCAL_SUBNET -m state --state RELATED,ESTABLISHED -j ACCEPT -m comment --comment "lobbyshift"
-EOF
+echo "iptables rules applied successfully"
+EOFSCRIPT
+
+    # Replace placeholders with actual values
+    sed -i "s/PLACEHOLDER_INTERFACE/$INTERFACE/g" $CONFIG_DIR/iptables-rules.sh
+    sed -i "s|PLACEHOLDER_SUBNET|$LOCAL_SUBNET|g" $CONFIG_DIR/iptables-rules.sh
     
     chmod +x $CONFIG_DIR/iptables-rules.sh
     
     # Apply rules
+    log_info "Applying iptables rules..."
     bash $CONFIG_DIR/iptables-rules.sh
     
     # Save iptables rules
+    log_info "Saving iptables rules..."
     netfilter-persistent save
 }
 
@@ -292,6 +319,13 @@ case "$1" in
     logs)
         sudo journalctl -u lobbyshift -f
         ;;
+    iptables)
+        echo "=== NAT Rules ==="
+        sudo iptables -t nat -L -v -n | grep -E "lobbyshift|Chain"
+        echo ""
+        echo "=== Forward Rules ==="
+        sudo iptables -L FORWARD -v -n | grep -E "lobbyshift|Chain"
+        ;;
     *)
         echo "LobbyShift CLI"
         echo ""
@@ -305,6 +339,7 @@ case "$1" in
         echo "  down      Stop VPN"
         echo "  restart   Restart LobbyShift service"
         echo "  logs      Show live logs"
+        echo "  iptables  Show current iptables rules"
         ;;
 esac
 EOF
@@ -327,10 +362,15 @@ print_success() {
     echo "  2. Upload your WireGuard VPN config"
     echo "  3. Set your console/PC gateway to: $SERVER_IP"
     echo ""
+    echo "Console Network Settings:"
+    echo "  Gateway: $SERVER_IP"
+    echo "  DNS: Your router IP or 8.8.8.8"
+    echo ""
     echo "CLI commands:"
-    echo "  lobbyshift status  - Show status"
-    echo "  lobbyshift list    - List configs"
-    echo "  lobbyshift switch  - Switch region"
+    echo "  lobbyshift status   - Show status"
+    echo "  lobbyshift list     - List configs"
+    echo "  lobbyshift switch   - Switch region"
+    echo "  lobbyshift iptables - Show firewall rules"
     echo ""
     echo "Start the service:"
     echo "  sudo systemctl start lobbyshift"
