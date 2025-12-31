@@ -59,11 +59,9 @@ pytest
 ## Areas We Need Help
 
 - 🌍 More VPN provider templates
-- 📊 Lobby tracking integration (cod.tracker.gg API)
 - 🐳 Docker support
 - 📱 Mobile-friendly UI improvements
 - 📝 Documentation and translations
-- 🧪 Test coverage
 
 ## Code of Conduct
 
