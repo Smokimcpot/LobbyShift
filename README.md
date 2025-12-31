@@ -43,7 +43,7 @@ LobbyShift is a **self-hosted tactical VPN gateway** designed to intercept and r
 - ✅ Zero subscription fees
 - ✅ Full operational security (self-hosted)
 
-> *"Why pay for NoLagVPN when you can deploy your own?"*
+> *"Why pay for services when you can deploy your own?"*
 
 ---
 
