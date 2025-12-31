@@ -121,6 +121,7 @@ LobbyShift is a **self-hosted tactical VPN gateway** designed to intercept and r
 | [Mullvad](https://mullvad.net) | ❌ No | ⭐ Best privacy |
 | [IVPN](https://ivpn.net) | ❌ No | Good alternative |
 | [Windscribe](https://windscribe.com) | ✅ Limited | Budget option |
+| and more... |
 
 ---
 
