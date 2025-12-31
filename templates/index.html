@@ -6,33 +6,24 @@
     <title>LobbyShift</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0f0f0f;
-            --bg-secondary: #1a1a1a;
-            --bg-card: #242424;
-            --accent: #00d4aa;
-            --accent-hover: #00f5c4;
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #141414;
+            --bg-card: #1a1a1a;
+            --bg-card-hover: #222222;
+            --accent: #ff9800;
+            --accent-bright: #ffb74d;
+            --accent-dark: #e65100;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
             --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --danger: #ff4757;
-            --warning: #ffa502;
-            --success: #2ed573;
-            --border: #333333;
-        }
-        
-        [data-theme="light"] {
-            --bg-primary: #f5f5f5;
-            --bg-secondary: #e8e8e8;
-            --bg-card: #ffffff;
-            --accent: #00a88a;
-            --accent-hover: #00c9a7;
-            --text-primary: #1a1a1a;
-            --text-secondary: #666666;
-            --danger: #e63946;
-            --warning: #f4a261;
-            --success: #2a9d8f;
-            --border: #d0d0d0;
+            --text-secondary: #888888;
+            --text-muted: #555555;
+            --border: #2a2a2a;
+            --border-accent: #ff980033;
         }
         
         * {
@@ -42,249 +33,437 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: 'Roboto Condensed', sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
-            line-height: 1.6;
-            transition: background 0.3s, color 0.3s;
+            line-height: 1.5;
+            position: relative;
+        }
+        
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 152, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 152, 0, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
         }
         
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
+            position: relative;
+            z-index: 1;
         }
         
         header {
             text-align: center;
-            padding: 40px 0;
-            border-bottom: 1px solid var(--border);
+            padding: 30px 0;
             margin-bottom: 30px;
             position: relative;
+            border-bottom: 2px solid var(--accent);
         }
         
-        .theme-toggle {
+        header::before {
+            content: "";
             position: absolute;
-            top: 20px;
-            right: 0;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 25px;
-            padding: 8px 16px;
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-        }
-        
-        .theme-toggle:hover {
-            border-color: var(--accent);
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
         }
         
         .logo {
-            font-size: 2.5rem;
+            font-family: 'Teko', sans-serif;
+            font-size: 3.5rem;
             font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .logo span {
             color: var(--accent);
-            margin-bottom: 10px;
         }
         
         .tagline {
+            font-family: 'Teko', sans-serif;
             color: var(--text-secondary);
             font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
         }
         
-        .status-card {
+        /* Cards */
+        .card {
             background: var(--bg-card);
-            border-radius: 12px;
-            padding: 25px;
+            border: 1px solid var(--border);
             margin-bottom: 20px;
-            transition: background 0.3s;
+            position: relative;
+            clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
         }
         
-        .status-header {
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+        }
+        
+        .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 152, 0, 0.03);
         }
         
-        .status-title {
-            font-size: 1.2rem;
+        .card-header.collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .card-header.collapsible:hover {
+            background: rgba(255, 152, 0, 0.06);
+        }
+        
+        .card-title {
+            font-family: 'Teko', sans-serif;
+            font-size: 1.3rem;
             font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
+        .card-title::before {
+            content: "▶";
+            font-size: 0.7rem;
+        }
+        
+        .collapse-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            color: var(--text-secondary);
+        }
+        
+        .card-body {
+            padding: 20px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .card-body.collapsed {
+            max-height: 0;
+            padding: 0 20px;
+        }
+        
+        .card-header.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+        
+        /* Active Config Summary (shown when collapsed) */
+        .active-summary {
+            display: none;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(76, 175, 80, 0.05);
+            border-top: 1px solid var(--border);
+        }
+        
+        .active-summary.visible {
+            display: flex;
+        }
+        
+        .active-summary .config-flag {
+            font-size: 1.8rem;
+        }
+        
+        .active-summary .config-info {
+            flex: 1;
+        }
+        
+        .active-summary .config-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .active-summary .config-meta {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .active-summary .config-time {
+            color: var(--accent);
+            font-family: 'Teko', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+        
+        /* Status Badge */
         .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-family: 'Teko', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
         }
         
         .status-badge.active {
-            background: rgba(46, 213, 115, 0.15);
+            border-color: var(--success);
             color: var(--success);
+            background: rgba(76, 175, 80, 0.1);
         }
         
         .status-badge.inactive {
-            background: rgba(160, 160, 160, 0.15);
+            border-color: var(--text-muted);
             color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.02);
         }
         
         .status-dot {
             width: 8px;
             height: 8px;
-            border-radius: 50%;
             background: currentColor;
+            animation: pulse 2s infinite;
         }
         
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Status Grid */
         .status-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
+            margin-bottom: 20px;
         }
         
         .status-item {
             background: var(--bg-secondary);
-            padding: 15px;
-            border-radius: 8px;
-            transition: background 0.3s;
+            border-left: 3px solid var(--accent);
+            padding: 12px 15px;
         }
         
         .status-item label {
             display: block;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+            font-family: 'Teko', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
         }
         
         .status-item value {
             display: block;
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 700;
+            color: var(--text-primary);
         }
         
+        /* Region Time Display */
+        .region-time {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(255, 152, 0, 0.05) 100%);
+            border: 1px solid var(--border-accent);
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .region-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .region-flag {
+            font-size: 2.5rem;
+        }
+        
+        .region-details h3 {
+            font-family: 'Teko', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+        
+        .region-details span {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .region-clock {
+            text-align: right;
+        }
+        
+        .region-clock .time {
+            font-family: 'Teko', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+        
+        .region-clock .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Buttons */
         .actions {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
+            flex-wrap: wrap;
         }
         
         button {
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: none;
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-family: 'Teko', sans-serif;
+            padding: 10px 20px;
+            border: 1px solid;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: transparent;
+            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
         }
         
         button:disabled {
-            opacity: 0.5;
+            opacity: 0.3;
             cursor: not-allowed;
         }
         
         .btn-primary {
-            background: var(--accent);
-            color: #000;
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(255, 152, 0, 0.1);
         }
         
         .btn-primary:hover:not(:disabled) {
-            background: var(--accent-hover);
+            background: var(--accent);
+            color: var(--bg-primary);
         }
         
         .btn-danger {
-            background: var(--danger);
-            color: white;
+            border-color: var(--danger);
+            color: var(--danger);
+            background: rgba(244, 67, 54, 0.1);
         }
         
         .btn-danger:hover:not(:disabled) {
-            opacity: 0.9;
+            background: var(--danger);
+            color: var(--bg-primary);
         }
         
         .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
+            border-color: var(--text-muted);
+            color: var(--text-secondary);
         }
         
         .btn-secondary:hover:not(:disabled) {
-            background: var(--border);
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
         }
         
-        .configs-section {
-            margin-top: 30px;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
+        /* Config List */
         .config-list {
             display: grid;
-            gap: 10px;
+            gap: 8px;
         }
         
         .config-item {
-            background: var(--bg-card);
-            border-radius: 10px;
-            padding: 18px 20px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 15px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: all 0.2s ease;
-            border: 2px solid transparent;
+            position: relative;
         }
         
         .config-item:hover {
-            border-color: var(--border);
+            border-color: var(--accent);
+            background: var(--bg-card-hover);
         }
         
         .config-item.active {
-            border-color: var(--accent);
+            border-color: var(--success);
+            background: rgba(76, 175, 80, 0.05);
+        }
+        
+        .config-item.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--success);
         }
         
         .config-item.favorite {
-            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0, 212, 170, 0.05) 100%);
+            border-color: var(--accent);
         }
         
         .config-info {
-            flex: 1;
             display: flex;
             align-items: center;
             gap: 12px;
+            flex: 1;
         }
         
         .favorite-btn {
             background: none;
             border: none;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             cursor: pointer;
             padding: 5px;
-            opacity: 0.4;
-            transition: all 0.2s;
+            transition: transform 0.2s;
+            clip-path: none;
         }
         
         .favorite-btn:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-        
-        .favorite-btn.active {
-            opacity: 1;
+            transform: scale(1.2);
         }
         
         .config-details {
@@ -292,9 +471,8 @@
         }
         
         .config-name {
-            font-weight: 600;
-            font-size: 1.05rem;
-            margin-bottom: 4px;
+            font-weight: 700;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -302,42 +480,58 @@
         }
         
         .config-flag {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+        }
+        
+        .config-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 4px;
         }
         
         .config-endpoint {
             font-size: 0.85rem;
-            color: var(--text-secondary);
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+        
+        .config-time {
+            font-size: 1rem;
+            color: var(--accent);
+            font-family: 'Teko', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
         
         .config-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
         
         .config-actions button {
-            padding: 8px 16px;
+            padding: 6px 12px;
             font-size: 0.85rem;
         }
         
+        /* Upload Zone */
         .upload-zone {
-            background: var(--bg-card);
+            background: var(--bg-secondary);
             border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 40px;
+            padding: 35px;
             text-align: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .upload-zone:hover, .upload-zone.dragover {
             border-color: var(--accent);
-            background: rgba(0, 212, 170, 0.05);
+            background: rgba(255, 152, 0, 0.05);
         }
         
         .upload-icon {
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 10px;
         }
         
@@ -353,124 +547,96 @@
             display: none;
         }
         
-        .setup-info {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 25px;
-            margin-top: 30px;
-            transition: background 0.3s;
-        }
-        
-        .setup-info h3 {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .setup-steps {
-            color: var(--text-secondary);
-        }
-        
-        .setup-steps code {
-            background: var(--bg-secondary);
-            padding: 2px 8px;
-            border-radius: 4px;
-            color: var(--accent);
-            font-family: 'Monaco', 'Menlo', monospace;
-        }
-        
-        /* Connection Logs */
-        .logs-section {
-            margin-top: 30px;
-        }
-        
-        .logs-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
+        /* Logs */
         .logs-container {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 20px;
-            max-height: 300px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            max-height: 250px;
             overflow-y: auto;
+        }
+        
+        .logs-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .logs-container::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        .logs-container::-webkit-scrollbar-thumb {
+            background: var(--accent);
         }
         
         .log-entry {
             display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 10px 0;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 15px;
             border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
         }
         
         .log-entry:last-child {
             border-bottom: none;
         }
         
-        .log-icon {
-            font-size: 1.2rem;
-        }
-        
         .log-icon.connected {
             color: var(--success);
         }
         
-        .log-icon.disconnected {
-            color: var(--text-secondary);
-        }
-        
-        .log-details {
-            flex: 1;
-        }
-        
         .log-action {
-            font-weight: 500;
+            color: var(--text-secondary);
         }
         
         .log-config {
             color: var(--accent);
+            font-weight: 600;
         }
         
         .log-time {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        
-        .log-extra {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: monospace;
         }
         
         .empty-logs {
+            padding: 30px;
             text-align: center;
-            color: var(--text-secondary);
-            padding: 20px;
+            color: var(--text-muted);
         }
-
-        .footer {
-            text-align: center;
-            padding: 30px 20px;
-            margin-top: 40px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-.footer a:hover {
-    text-decoration: underline;
-}
         
-        /* Modals */
+        /* Setup Info */
+        .setup-info {
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .setup-info h3 {
+            font-family: 'Teko', sans-serif;
+            color: var(--accent);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+        }
+        
+        .setup-steps {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .setup-steps code {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            color: var(--accent);
+            font-family: monospace;
+        }
+        
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -478,10 +644,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 1001;
         }
         
         .modal.active {
@@ -490,19 +656,29 @@
         
         .modal-content {
             background: var(--bg-card);
-            border-radius: 12px;
-            padding: 25px;
+            border: 1px solid var(--accent);
+            padding: 0;
             width: 90%;
-            max-width: 600px;
+            max-width: 550px;
             max-height: 80vh;
             overflow-y: auto;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: rgba(255, 152, 0, 0.1);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .modal-header h3 {
+            font-family: 'Teko', sans-serif;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         
         .modal-close {
@@ -512,22 +688,26 @@
             font-size: 1.5rem;
             cursor: pointer;
             padding: 0;
+            clip-path: none;
         }
         
         .modal-close:hover {
-            color: var(--text-primary);
+            color: var(--danger);
+        }
+        
+        .modal-body {
+            padding: 20px;
         }
         
         textarea {
             width: 100%;
-            min-height: 300px;
+            min-height: 280px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
+            color: var(--success);
             padding: 15px;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.9rem;
+            font-family: monospace;
+            font-size: 0.85rem;
             resize: vertical;
         }
         
@@ -536,17 +716,22 @@
             border-color: var(--accent);
         }
         
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            font-weight: 500;
+            padding: 12px 20px;
+            font-family: 'Teko', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 2000;
+            border-left: 3px solid;
         }
         
         .toast.show {
@@ -555,231 +740,340 @@
         }
         
         .toast.success {
-            background: var(--success);
-            color: white;
+            background: var(--bg-card);
+            border-color: var(--success);
+            color: var(--success);
         }
         
         .toast.error {
-            background: var(--danger);
-            color: white;
+            background: var(--bg-card);
+            border-color: var(--danger);
+            color: var(--danger);
         }
         
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px 20px;
+            margin-top: 30px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
         }
         
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            color: var(--accent-bright);
+        }
+        
+        /* Responsive */
         @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-            
-            header {
-                padding: 25px 0;
-            }
-            
-            .logo {
-                font-size: 1.8rem;
-            }
-            
-            .theme-toggle {
-                position: static;
-                margin-bottom: 20px;
-            }
-            
-            .status-header {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-            
-            .config-item {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .config-info {
-                width: 100%;
-            }
-            
-            .config-actions {
-                width: 100%;
-            }
-            
-            .config-actions button {
-                flex: 1;
-            }
+            .container { padding: 15px; }
+            .logo { font-size: 2.2rem; letter-spacing: 4px; }
+            .card-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .status-grid { grid-template-columns: 1fr; }
+            .actions { flex-direction: column; }
+            .config-item { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .config-actions { width: 100%; }
+            .config-actions button { flex: 1; }
+            .region-time { flex-direction: column; gap: 15px; text-align: center; }
+            .region-clock { text-align: center; }
+            .config-meta { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .active-summary { flex-direction: column; text-align: center; }
+            .active-summary .config-meta { justify-content: center; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
-                <span id="theme-icon">🌙</span>
-            </button>
-            <div class="logo">🎮 LobbyShift</div>
-            <div class="tagline">Self-hosted CoD Lobby Optimizer</div>
+            <div class="logo">LOBBY<span>SHIFT</span></div>
+            <div class="tagline">Tactical Matchmaking Control</div>
         </header>
         
-        <div class="status-card">
-            <div class="status-header">
-                <div class="status-title">VPN Status</div>
+        <!-- Region Time Display -->
+        <div class="region-time" id="region-time-display" style="display: none;">
+            <div class="region-info">
+                <span class="region-flag" id="region-flag">🌍</span>
+                <div class="region-details">
+                    <h3 id="region-name">-</h3>
+                    <span id="region-timezone">-</span>
+                </div>
+            </div>
+            <div class="region-clock">
+                <div class="time" id="region-clock-time">--:--</div>
+                <div class="label">Local Time</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">System Status</div>
                 <div id="status-badge" class="status-badge inactive">
                     <span class="status-dot"></span>
-                    <span id="status-text">Disconnected</span>
+                    <span id="status-text">Offline</span>
                 </div>
             </div>
-            
-            <div class="status-grid">
-                <div class="status-item">
-                    <label>Active Config</label>
-                    <value id="active-config">-</value>
+            <div class="card-body">
+                <div class="status-grid">
+                    <div class="status-item">
+                        <label>Active Config</label>
+                        <value id="active-config">-</value>
+                    </div>
+                    <div class="status-item">
+                        <label>Endpoint</label>
+                        <value id="endpoint">-</value>
+                    </div>
+                    <div class="status-item">
+                        <label>Last Handshake</label>
+                        <value id="handshake">-</value>
+                    </div>
+                    <div class="status-item">
+                        <label>Transfer</label>
+                        <value id="transfer">-</value>
+                    </div>
                 </div>
-                <div class="status-item">
-                    <label>Endpoint</label>
-                    <value id="endpoint">-</value>
+                
+                <div class="actions">
+                    <button id="btn-start" class="btn-primary" onclick="startVPN()">Deploy VPN</button>
+                    <button id="btn-stop" class="btn-danger" onclick="stopVPN()">Disconnect</button>
+                    <button class="btn-secondary" onclick="refreshStatus()">Refresh</button>
                 </div>
-                <div class="status-item">
-                    <label>Last Handshake</label>
-                    <value id="handshake">-</value>
-                </div>
-                <div class="status-item">
-                    <label>Transfer</label>
-                    <value id="transfer">-</value>
-                </div>
-            </div>
-            
-            <div class="actions">
-                <button id="btn-start" class="btn-primary" onclick="startVPN()">Start VPN</button>
-                <button id="btn-stop" class="btn-danger" onclick="stopVPN()">Stop VPN</button>
-                <button class="btn-secondary" onclick="refreshStatus()">Refresh</button>
             </div>
         </div>
         
-        <div class="configs-section">
-            <div class="section-header">
-                <div class="section-title">VPN Configurations</div>
+        <div class="card" id="regions-card">
+            <div class="card-header collapsible" onclick="toggleSection('regions')">
+                <div class="card-title">VPN Regions</div>
+                <span class="collapse-icon">▼</span>
             </div>
-            
-            <div id="config-list" class="config-list">
-                <!-- Configs loaded dynamically -->
+            <div class="active-summary" id="regions-summary">
+                <!-- Shown when collapsed -->
             </div>
-            
-            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
-                <div class="upload-icon">📁</div>
-                <div class="upload-text">
-                    <strong>Click to upload</strong> or drag & drop<br>
-                    WireGuard config file (.conf)
+            <div class="card-body" id="regions-body">
+                <div id="config-list" class="config-list"></div>
+                
+                <div class="upload-zone" id="upload-zone" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
+                    <div class="upload-icon">📡</div>
+                    <div class="upload-text">
+                        <strong>Deploy New Region</strong><br>
+                        Drop WireGuard config here
+                    </div>
                 </div>
+                <input type="file" id="file-input" accept=".conf" onchange="uploadConfig(this.files[0])">
             </div>
-            <input type="file" id="file-input" accept=".conf" onchange="uploadConfig(this.files[0])">
         </div>
         
-        <div class="logs-section">
-            <div class="logs-header">
-                <div class="section-title">Connection History</div>
-                <button class="btn-secondary" onclick="clearLogs()" style="padding: 8px 16px; font-size: 0.85rem;">Clear</button>
+        <div class="card" id="logs-card">
+            <div class="card-header collapsible collapsed" onclick="toggleSection('logs')">
+                <div class="card-title">Operation Log</div>
+                <span class="collapse-icon">▼</span>
             </div>
-            <div id="logs-container" class="logs-container">
-                <!-- Logs loaded dynamically -->
+            <div class="card-body collapsed" id="logs-body">
+                <div id="logs-container" class="logs-container"></div>
             </div>
         </div>
         
         <div class="setup-info">
-            <h3>📋 Console Setup</h3>
+            <h3>⚙ Console Configuration</h3>
             <div class="setup-steps">
-                <p>Set your PS5/Xbox network settings:</p>
+                <p>Set your PS5/Xbox network gateway to this server:</p>
                 <p style="margin-top: 10px;">
                     <strong>Gateway:</strong> <code>{{ server_ip }}</code><br>
-                    <strong>DNS:</strong> Your router IP or <code>8.8.8.8</code>
+                    <strong>DNS:</strong> <code>8.8.8.8</code> or your router IP
                 </p>
             </div>
         </div>
-
+        
         <footer class="footer">
             Made with ❤️ by <a href="https://github.com/Smokimcpot" target="_blank">Smokimcpot</a>
         </footer>
-
     </div>
     
-    <!-- Edit Modal -->
     <div id="edit-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modal-title">Edit Config</h3>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
-            <textarea id="config-editor"></textarea>
-            <div class="actions" style="margin-top: 15px;">
-                <button class="btn-primary" onclick="saveConfig()">Save</button>
-                <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+            <div class="modal-body">
+                <textarea id="config-editor"></textarea>
+                <div class="actions" style="margin-top: 15px;">
+                    <button class="btn-primary" onclick="saveConfig()">Save</button>
+                    <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Info Modal -->
     <div id="info-modal" class="modal">
-        <div class="modal-content" style="max-width: 450px;">
+        <div class="modal-content" style="max-width: 420px;">
             <div class="modal-header">
                 <h3 id="info-modal-title">Info</h3>
                 <button class="modal-close" onclick="closeInfoModal()">&times;</button>
             </div>
-            <div id="info-modal-body" style="color: var(--text-secondary); line-height: 1.8;"></div>
-            <div class="actions" style="margin-top: 20px;">
-                <button class="btn-primary" onclick="closeInfoModal()">Got it</button>
+            <div class="modal-body">
+                <div id="info-modal-body" style="color: var(--text-secondary); line-height: 1.8;"></div>
+                <div class="actions" style="margin-top: 20px;">
+                    <button class="btn-primary" onclick="closeInfoModal()">Roger That</button>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Toast -->
     <div id="toast" class="toast"></div>
     
     <script>
         let currentEditConfig = null;
+        let currentRegionTimezone = null;
+        let allConfigs = [];
+        
+        // Country to timezone mapping
+        const countryTimezones = {
+            'US': 'America/New_York', 'USA': 'America/New_York', 'United States': 'America/New_York',
+            'MX': 'America/Mexico_City', 'Mexico': 'America/Mexico_City',
+            'JP': 'Asia/Tokyo', 'Japan': 'Asia/Tokyo',
+            'TR': 'Europe/Istanbul', 'Turkey': 'Europe/Istanbul',
+            'EG': 'Africa/Cairo', 'Egypt': 'Africa/Cairo',
+            'ZA': 'Africa/Johannesburg', 'South Africa': 'Africa/Johannesburg',
+            'BR': 'America/Sao_Paulo', 'Brazil': 'America/Sao_Paulo',
+            'AR': 'America/Argentina/Buenos_Aires', 'Argentina': 'America/Argentina/Buenos_Aires',
+            'NL': 'Europe/Amsterdam', 'Netherlands': 'Europe/Amsterdam',
+            'DE': 'Europe/Berlin', 'Germany': 'Europe/Berlin',
+            'GB': 'Europe/London', 'UK': 'Europe/London', 'United Kingdom': 'Europe/London',
+            'FR': 'Europe/Paris', 'France': 'Europe/Paris',
+            'ES': 'Europe/Madrid', 'Spain': 'Europe/Madrid',
+            'IT': 'Europe/Rome', 'Italy': 'Europe/Rome',
+            'AU': 'Australia/Sydney', 'Australia': 'Australia/Sydney',
+            'CA': 'America/Toronto', 'Canada': 'America/Toronto',
+            'KR': 'Asia/Seoul', 'South Korea': 'Asia/Seoul',
+            'SG': 'Asia/Singapore', 'Singapore': 'Asia/Singapore',
+            'IN': 'Asia/Kolkata', 'India': 'Asia/Kolkata',
+            'RU': 'Europe/Moscow', 'Russia': 'Europe/Moscow',
+            'PL': 'Europe/Warsaw', 'Poland': 'Europe/Warsaw',
+            'SE': 'Europe/Stockholm', 'Sweden': 'Europe/Stockholm',
+            'CH': 'Europe/Zurich', 'Switzerland': 'Europe/Zurich',
+            'KZ': 'Asia/Almaty', 'Kazakhstan': 'Asia/Almaty',
+            'AE': 'Asia/Dubai', 'UAE': 'Asia/Dubai'
+        };
+        
+        function getTimezoneForCountry(countryName) {
+            if (!countryName) return null;
+            return countryTimezones[countryName] || null;
+        }
+        
+        function getLocalTimeForCountry(countryName) {
+            const timezone = getTimezoneForCountry(countryName);
+            if (!timezone) return null;
+            try {
+                return new Date().toLocaleTimeString('en-US', {
+                    timeZone: timezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        function updateRegionClock() {
+            if (!currentRegionTimezone) return;
+            try {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('en-US', {
+                    timeZone: currentRegionTimezone,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                document.getElementById('region-clock-time').textContent = timeStr;
+            } catch (e) {
+                console.error('Failed to update clock:', e);
+            }
+        }
+        
+        function updateRegionDisplay(config) {
+            const display = document.getElementById('region-time-display');
+            
+            if (!config || !config.country) {
+                display.style.display = 'none';
+                currentRegionTimezone = null;
+                return;
+            }
+            
+            const timezone = getTimezoneForCountry(config.country.name);
+            if (!timezone) {
+                display.style.display = 'none';
+                currentRegionTimezone = null;
+                return;
+            }
+            
+            currentRegionTimezone = timezone;
+            display.style.display = 'flex';
+            document.getElementById('region-flag').textContent = config.country.flag || '🌍';
+            document.getElementById('region-name').textContent = config.country.name;
+            document.getElementById('region-timezone').textContent = timezone.replace('_', ' ');
+            updateRegionClock();
+        }
+        
+        function toggleSection(section) {
+            const header = document.querySelector(`#${section}-card .card-header`);
+            const body = document.getElementById(`${section}-body`);
+            const summary = document.getElementById(`${section}-summary`);
+            
+            header.classList.toggle('collapsed');
+            body.classList.toggle('collapsed');
+            
+            if (summary) {
+                summary.classList.toggle('visible', header.classList.contains('collapsed'));
+            }
+        }
+        
+        function updateActiveSummary() {
+            const summary = document.getElementById('regions-summary');
+            const activeConfig = allConfigs.find(c => c.active);
+            
+            if (!activeConfig) {
+                summary.innerHTML = '<span style="color: var(--text-muted);">No active region</span>';
+                return;
+            }
+            
+            const localTime = getLocalTimeForCountry(activeConfig.country?.name);
+            summary.innerHTML = `
+                <span class="config-flag">${activeConfig.country?.flag || '🌍'}</span>
+                <div class="config-info">
+                    <div class="config-name">${activeConfig.country?.name || 'Unknown'} (${activeConfig.name})</div>
+                    <div class="config-meta">
+                        <span class="config-endpoint">${activeConfig.endpoint}</span>
+                        ${localTime ? `<span class="config-time">🕐 ${localTime}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            loadTheme();
             refreshStatus();
             loadConfigs();
             loadLogs();
             setupDragDrop();
-            
-            // Auto-refresh every 10 seconds
             setInterval(refreshStatus, 10000);
+            setInterval(updateRegionClock, 1000);
+            setInterval(() => {
+                // Update times in config list
+                if (allConfigs.length > 0) {
+                    renderConfigs(allConfigs);
+                    updateActiveSummary();
+                }
+            }, 60000); // Update every minute
         });
         
-        // Theme Toggle
-        function toggleTheme() {
-            const body = document.body;
-            const icon = document.getElementById('theme-icon');
-            
-            if (body.getAttribute('data-theme') === 'light') {
-                body.removeAttribute('data-theme');
-                icon.textContent = '🌙';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.setAttribute('data-theme', 'light');
-                icon.textContent = '☀️';
-                localStorage.setItem('theme', 'light');
-            }
-        }
-        
-        function loadTheme() {
-            const theme = localStorage.getItem('theme');
-            const icon = document.getElementById('theme-icon');
-            
-            if (theme === 'light') {
-                document.body.setAttribute('data-theme', 'light');
-                icon.textContent = '☀️';
-            }
-        }
-        
-        // API calls
         async function api(endpoint, method = 'GET', body = null) {
             const options = { method };
             if (body) {
@@ -815,31 +1109,37 @@
             
             if (status.active) {
                 badge.className = 'status-badge active';
-                statusText.textContent = 'Connected';
+                statusText.textContent = 'Online';
                 activeConfig.textContent = status.config || '-';
                 endpoint.textContent = status.endpoint || '-';
                 handshake.textContent = status.latest_handshake || '-';
                 transfer.textContent = status.transfer_rx && status.transfer_tx 
-                    ? `↓ ${status.transfer_rx} / ↑ ${status.transfer_tx}` 
-                    : '-';
+                    ? `↓ ${status.transfer_rx} / ↑ ${status.transfer_tx}` : '-';
                 btnStart.disabled = true;
                 btnStop.disabled = false;
             } else {
                 badge.className = 'status-badge inactive';
-                statusText.textContent = 'Disconnected';
+                statusText.textContent = 'Offline';
                 activeConfig.textContent = '-';
                 endpoint.textContent = '-';
                 handshake.textContent = '-';
                 transfer.textContent = '-';
                 btnStart.disabled = false;
                 btnStop.disabled = true;
+                updateRegionDisplay(null);
             }
         }
         
         async function loadConfigs() {
             try {
                 const data = await api('/configs');
-                renderConfigs(data.configs);
+                allConfigs = data.configs;
+                renderConfigs(allConfigs);
+                updateActiveSummary();
+                
+                // Update region display for active config
+                const activeConfig = allConfigs.find(c => c.active);
+                updateRegionDisplay(activeConfig);
             } catch (e) {
                 console.error('Failed to load configs:', e);
             }
@@ -849,48 +1149,58 @@
             const list = document.getElementById('config-list');
             
             if (configs.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No configurations yet. Upload a WireGuard config to get started.</p>';
+                list.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">No regions deployed. Upload a WireGuard config to begin.</p>';
                 return;
             }
             
-            list.innerHTML = configs.map(config => `
+            configs.sort((a, b) => {
+                if (a.favorite && !b.favorite) return -1;
+                if (!a.favorite && b.favorite) return 1;
+                if (a.active && !b.active) return -1;
+                if (!a.active && b.active) return 1;
+                return 0;
+            });
+            
+            list.innerHTML = configs.map(config => {
+                const localTime = getLocalTimeForCountry(config.country?.name);
+                return `
                 <div class="config-item ${config.active ? 'active' : ''} ${config.favorite ? 'favorite' : ''}">
                     <div class="config-info">
-                        <button class="favorite-btn ${config.favorite ? 'active' : ''}" onclick="toggleFavorite('${config.name}')" title="${config.favorite ? 'Remove from favorites' : 'Add to favorites'}">
+                        <button class="favorite-btn ${config.favorite ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${config.name}')" title="${config.favorite ? 'Remove from favorites' : 'Add to favorites'}">
                             ${config.favorite ? '⭐' : '☆'}
                         </button>
                         <div class="config-details">
                             <div class="config-name">
                                 <span class="config-flag">${config.country?.flag || '🌍'}</span>
                                 ${config.country?.name || 'Unknown'} 
-                                <span style="color: var(--text-secondary); font-weight: 400;">(${config.name})</span>
+                                <span style="color: var(--text-muted); font-weight: 400;">(${config.name})</span>
                                 ${config.active ? ' ✓' : ''}
                             </div>
-                            <div class="config-endpoint">${config.endpoint}</div>
+                            <div class="config-meta">
+                                <span class="config-endpoint">${config.endpoint}</span>
+                                ${localTime ? `<span class="config-time">🕐 ${localTime}</span>` : ''}
+                            </div>
                         </div>
                     </div>
                     <div class="config-actions">
-                        <button class="btn-primary" onclick="switchConfig('${config.name}')" ${config.active ? 'disabled' : ''}>
-                            ${config.active ? 'Active' : 'Switch'}
+                        <button class="btn-primary" onclick="event.stopPropagation(); switchConfig('${config.name}')" ${config.active ? 'disabled' : ''}>
+                            ${config.active ? 'Active' : 'Deploy'}
                         </button>
-                        <button class="btn-secondary" onclick="editConfig('${config.name}')">Edit</button>
-                        <button class="btn-danger" onclick="deleteConfig('${config.name}')">Delete</button>
+                        <button class="btn-secondary" onclick="event.stopPropagation(); editConfig('${config.name}')">Edit</button>
+                        <button class="btn-danger" onclick="event.stopPropagation(); deleteConfig('${config.name}')">Delete</button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
         
         async function toggleFavorite(name) {
             try {
-                const configs = await api('/configs');
-                const config = configs.configs.find(c => c.name === name);
-                
+                const config = allConfigs.find(c => c.name === name);
                 if (config?.favorite) {
                     await api(`/favorites/${name}`, 'DELETE');
                 } else {
                     await api(`/favorites/${name}`, 'POST');
                 }
-                
                 await loadConfigs();
             } catch (e) {
                 showToast('Failed to update favorite', 'error');
@@ -908,24 +1218,21 @@
         
         function renderLogs(logs) {
             const container = document.getElementById('logs-container');
-            
             if (!logs || logs.length === 0) {
-                container.innerHTML = '<div class="empty-logs">No connection history yet</div>';
+                container.innerHTML = '<div class="empty-logs">No operations logged</div>';
                 return;
             }
-            
             container.innerHTML = logs.slice(0, 20).map(log => {
                 const date = new Date(log.timestamp);
                 const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
                 const icon = log.action === 'connected' ? '🟢' : '⚪';
-                const iconClass = log.action === 'connected' ? 'connected' : 'disconnected';
-                
+                const iconClass = log.action === 'connected' ? 'connected' : '';
                 return `
                     <div class="log-entry">
                         <span class="log-icon ${iconClass}">${icon}</span>
                         <div class="log-details">
                             <div>
-                                <span class="log-action">${log.action === 'connected' ? 'Connected to' : 'Disconnected from'}</span>
+                                <span class="log-action">${log.action === 'connected' ? 'Deployed to' : 'Disconnected from'}</span>
                                 <span class="log-config">${log.config || 'Unknown'}</span>
                             </div>
                             ${log.details ? `<div class="log-extra">${log.details}</div>` : ''}
@@ -937,27 +1244,26 @@
         }
         
         async function clearLogs() {
-            if (!confirm('Clear all connection history?')) return;
-            
+            if (!confirm('Clear all operation logs?')) return;
             try {
                 await api('/logs', 'DELETE');
                 await loadLogs();
-                showToast('History cleared', 'success');
+                showToast('Logs cleared', 'success');
             } catch (e) {
-                showToast('Failed to clear history', 'error');
+                showToast('Failed to clear logs', 'error');
             }
         }
         
         async function startVPN() {
             try {
-                showToast('Starting VPN...', 'success');
+                showToast('Deploying VPN...', 'success');
                 await api('/up', 'POST');
                 await refreshStatus();
                 await loadConfigs();
                 await loadLogs();
-                showToast('VPN started!', 'success');
+                showToast('VPN Online', 'success');
             } catch (e) {
-                showToast('Failed to start VPN', 'error');
+                showToast('Deployment failed', 'error');
             }
         }
         
@@ -967,22 +1273,22 @@
                 await refreshStatus();
                 await loadConfigs();
                 await loadLogs();
-                showToast('VPN stopped', 'success');
+                showToast('VPN Disconnected', 'success');
             } catch (e) {
-                showToast('Failed to stop VPN', 'error');
+                showToast('Disconnect failed', 'error');
             }
         }
         
         async function switchConfig(name) {
             try {
-                showToast(`Switching to ${name}...`, 'success');
+                showToast(`Deploying ${name}...`, 'success');
                 await api(`/switch/${name}`, 'POST');
                 await refreshStatus();
                 await loadConfigs();
                 await loadLogs();
-                showModal('Restart Required', 'VPN switched successfully!<br><br>⚠️ <strong>Please restart your game</strong> for the changes to take effect.<br><br>The new region will be used for matchmaking after restarting.');
+                showModal('Mission Updated', 'Region deployed successfully!<br><br>⚠️ <strong>Restart your game</strong> to apply new matchmaking region.<br><br>New lobbies will use the updated location.');
             } catch (e) {
-                showToast('Failed to switch config', 'error');
+                showToast('Deployment failed', 'error');
             }
         }
         
@@ -1000,73 +1306,60 @@
         
         async function saveConfig() {
             if (!currentEditConfig) return;
-            
             try {
                 const content = document.getElementById('config-editor').value;
                 await api(`/configs/${currentEditConfig}`, 'PUT', { content });
                 closeModal();
                 await refreshStatus();
-                showToast('Config saved!', 'success');
+                showToast('Config saved', 'success');
             } catch (e) {
                 showToast('Failed to save config', 'error');
             }
         }
         
         async function deleteConfig(name) {
-            if (!confirm(`Delete config "${name}"?`)) return;
-            
+            if (!confirm(`Remove region "${name}"?`)) return;
             try {
                 await api(`/configs/${name}`, 'DELETE');
                 await loadConfigs();
-                showToast('Config deleted', 'success');
+                showToast('Region removed', 'success');
             } catch (e) {
-                showToast('Failed to delete config', 'error');
+                showToast('Failed to remove region', 'error');
             }
         }
         
         async function uploadConfig(file) {
             if (!file) return;
-            
             try {
                 const formData = new FormData();
                 formData.append('file', file);
-                
                 showToast('Uploading...', 'success');
                 await api('/configs', 'POST', formData);
                 await loadConfigs();
-                showToast('Config uploaded!', 'success');
-                
-                // Reset file input
+                showToast('Region deployed', 'success');
                 document.getElementById('file-input').value = '';
             } catch (e) {
-                showToast('Failed to upload config', 'error');
+                showToast('Upload failed', 'error');
             }
         }
         
         function setupDragDrop() {
             const zone = document.getElementById('upload-zone');
-            
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(event => {
-                zone.addEventListener(event, e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
+                zone.addEventListener(event, e => { e.preventDefault(); e.stopPropagation(); });
             });
-            
             ['dragenter', 'dragover'].forEach(event => {
                 zone.addEventListener(event, () => zone.classList.add('dragover'));
             });
-            
             ['dragleave', 'drop'].forEach(event => {
                 zone.addEventListener(event, () => zone.classList.remove('dragover'));
             });
-            
             zone.addEventListener('drop', e => {
                 const file = e.dataTransfer.files[0];
                 if (file && file.name.endsWith('.conf')) {
                     uploadConfig(file);
                 } else {
-                    showToast('Please upload a .conf file', 'error');
+                    showToast('Invalid file type', 'error');
                 }
             });
         }
@@ -1090,18 +1383,11 @@
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.className = `toast ${type} show`;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
         
-        // Close modal on escape
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') {
-                closeModal();
-                closeInfoModal();
-            }
+            if (e.key === 'Escape') { closeModal(); closeInfoModal(); }
         });
     </script>
 </body>
