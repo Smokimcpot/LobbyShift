@@ -206,13 +206,13 @@ sudo systemctl start lobbyshift
 
 ### 1. Access Command Center
 
-<p align="center">
-  <img src="docs/images/webui.png" alt="LobbyShift Web Interface" width="800">
-</p>
-
 ```
 http://<SERVER-IP>:8080
 ```
+
+<p align="center">
+  <img src="docs/images/webui.png" alt="LobbyShift Web Interface" width="800">
+</p>
 
 ### 2. Upload VPN Configs
 
