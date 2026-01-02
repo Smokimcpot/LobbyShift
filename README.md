@@ -63,6 +63,22 @@ LobbyShift is a **self-hosted tactical VPN gateway** designed to intercept and r
 
 ---
 
+## 🌐 LANGUAGE SUPPORT
+```
+┌─────────────────────────────────────────┐
+│         SUPPORTED LANGUAGES             │
+├──────────┬──────────────────────────────┤
+│ 🇬🇧 EN   │ English (Default)            │
+│ 🇩🇪 DE   │ Deutsch                      │
+│ 🇫🇷 FR   │ Français                     │
+│ 🇮🇹 IT   │ Italiano                     │
+│ 🇪🇸 ES   │ Español                      │
+└──────────┴──────────────────────────────┘
+```
+
+Language selection available in the top-right corner of the UI.  
+Your preference is saved automatically.
+
 ## 🔧 SYSTEM ARCHITECTURE
 
 ```
