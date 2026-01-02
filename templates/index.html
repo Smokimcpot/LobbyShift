@@ -7,11 +7,6 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="icon" type="image/png" href="/static/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="manifest" href="/static/manifest.json">
-    <meta name="theme-color" content="#ff9800">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/static/icon-192.png">
     <style>
         :root {
             --bg-primary: #0d0d0d;
@@ -775,6 +770,280 @@
             color: var(--accent-bright);
         }
         
+        /* Settings */
+        .settings-form {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .setting-group {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 20px;
+        }
+        
+        .setting-group h4 {
+            font-family: 'Teko', sans-serif;
+            font-size: 1.1rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .setting-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .setting-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .setting-row label {
+            font-weight: 600;
+            min-width: 120px;
+            color: var(--text-secondary);
+        }
+        
+        .setting-row input[type="text"] {
+            flex: 1;
+            max-width: 200px;
+            padding: 10px 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 1rem;
+        }
+        
+        .setting-row input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .setting-row input[type="text"]::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .setting-select {
+            flex: 1;
+            max-width: 250px;
+            padding: 10px 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .setting-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .setting-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+        
+        .toggle-slider::before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: var(--text-muted);
+            transition: 0.3s;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background: rgba(255, 152, 0, 0.2);
+            border-color: var(--accent);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(30px);
+            background: var(--accent);
+        }
+        
+        .toggle-status {
+            font-family: 'Teko', sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .toggle-status.active {
+            color: var(--success);
+        }
+        
+        .toggle-status.inactive {
+            color: var(--text-muted);
+        }
+        
+        .warning-box {
+            background: rgba(255, 152, 0, 0.1);
+            border: 1px solid var(--accent);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .warning-box h5 {
+            font-family: 'Teko', sans-serif;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .warning-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .warning-box code {
+            background: var(--bg-card);
+            padding: 2px 6px;
+            color: var(--accent);
+            font-family: monospace;
+        }
+        
+        .warning-box ul {
+            margin: 10px 0 0 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .warning-box li {
+            margin-bottom: 5px;
+        }
+        
+        .settings-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .autostart-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            margin-bottom: 15px;
+        }
+        
+        .autostart-status.active {
+            border-color: var(--success);
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .autostart-status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+        
+        .autostart-status.active .autostart-status-dot {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        /* Config Names List */
+        .config-names-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .config-name-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+        
+        .config-name-item .config-original {
+            min-width: 150px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .config-name-item .config-original .flag {
+            font-size: 1.2rem;
+        }
+        
+        .config-name-item .arrow {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+        
+        .config-name-item input {
+            flex: 1;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+        
+        .config-name-item input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .config-name-item input::placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+        
         /* Responsive */
         @media (max-width: 600px) {
             .container { padding: 15px; }
@@ -790,14 +1059,62 @@
             .config-meta { flex-direction: column; align-items: flex-start; gap: 5px; }
             .active-summary { flex-direction: column; text-align: center; }
             .active-summary .config-meta { justify-content: center; }
+            .setting-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .setting-row label { min-width: auto; }
+            .setting-row input[type="text"], .setting-select { max-width: 100%; width: 100%; }
+            .config-name-item { flex-direction: column; align-items: stretch; gap: 8px; }
+            .config-name-item .config-original { min-width: auto; }
+            .config-name-item .arrow { display: none; }
+            .config-name-item input { width: 100%; }
+            .settings-actions { flex-direction: column; }
+            .settings-actions button { width: 100%; }
+            .warning-box ul { margin-left: 15px; }
+            .language-selector { position: static; margin-bottom: 15px; }
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: absolute;
+            top: 30px;
+            right: 0;
+        }
+        
+        .language-selector select {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 6px 10px;
+            font-family: 'Roboto Condensed', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+        }
+        
+        .language-selector select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .language-selector select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
+            <div class="language-selector">
+                <select id="language-select" onchange="changeLanguage(this.value)">
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="de">🇩🇪 DE</option>
+                    <option value="fr">🇫🇷 FR</option>
+                    <option value="it">🇮🇹 IT</option>
+                    <option value="es">🇪🇸 ES</option>
+                </select>
+            </div>
             <div class="logo">LOBBY<span>SHIFT</span></div>
-            <div class="tagline">Tactical Matchmaking Control</div>
+            <div class="tagline" data-i18n="tagline">Tactical Matchmaking Control</div>
         </header>
         
         <!-- Region Time Display -->
@@ -817,7 +1134,7 @@
         
         <div class="card">
             <div class="card-header">
-                <div class="card-title">System Status</div>
+                <div class="card-title" data-i18n="systemStatus">System Status</div>
                 <div id="status-badge" class="status-badge inactive">
                     <span class="status-dot"></span>
                     <span id="status-text">Offline</span>
@@ -826,34 +1143,34 @@
             <div class="card-body">
                 <div class="status-grid">
                     <div class="status-item">
-                        <label>Active Config</label>
+                        <label data-i18n="activeConfig">Active Config</label>
                         <value id="active-config">-</value>
                     </div>
                     <div class="status-item">
-                        <label>Endpoint</label>
+                        <label data-i18n="endpoint">Endpoint</label>
                         <value id="endpoint">-</value>
                     </div>
                     <div class="status-item">
-                        <label>Last Handshake</label>
+                        <label data-i18n="lastHandshake">Last Handshake</label>
                         <value id="handshake">-</value>
                     </div>
                     <div class="status-item">
-                        <label>Transfer</label>
+                        <label data-i18n="transfer">Transfer</label>
                         <value id="transfer">-</value>
                     </div>
                 </div>
                 
                 <div class="actions">
-                    <button id="btn-start" class="btn-primary" onclick="startVPN()">Deploy VPN</button>
-                    <button id="btn-stop" class="btn-danger" onclick="stopVPN()">Disconnect</button>
-                    <button class="btn-secondary" onclick="refreshStatus()">Refresh</button>
+                    <button id="btn-start" class="btn-primary" onclick="startVPN()" data-i18n="deployVpn">Deploy VPN</button>
+                    <button id="btn-stop" class="btn-danger" onclick="stopVPN()" data-i18n="disconnect">Disconnect</button>
+                    <button class="btn-secondary" onclick="refreshStatus()" data-i18n="refresh">Refresh</button>
                 </div>
             </div>
         </div>
         
         <div class="card" id="regions-card">
             <div class="card-header collapsible" onclick="toggleSection('regions')">
-                <div class="card-title">VPN Regions</div>
+                <div class="card-title" data-i18n="vpnRegions">VPN Regions</div>
                 <span class="collapse-icon">▼</span>
             </div>
             <div class="active-summary" id="regions-summary">
@@ -865,8 +1182,8 @@
                 <div class="upload-zone" id="upload-zone" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
                     <div class="upload-icon">📡</div>
                     <div class="upload-text">
-                        <strong>Deploy New Region</strong><br>
-                        Drop WireGuard config here
+                        <strong data-i18n="deployNewRegion">Deploy New Region</strong><br>
+                        <span data-i18n="dropConfig">Drop WireGuard config here</span>
                     </div>
                 </div>
                 <input type="file" id="file-input" accept=".conf" onchange="uploadConfig(this.files[0])">
@@ -875,7 +1192,7 @@
         
         <div class="card" id="logs-card">
             <div class="card-header collapsible collapsed" onclick="toggleSection('logs')">
-                <div class="card-title">Operation Log</div>
+                <div class="card-title" data-i18n="operationLog">Operation Log</div>
                 <span class="collapse-icon">▼</span>
             </div>
             <div class="card-body collapsed" id="logs-body">
@@ -883,13 +1200,74 @@
             </div>
         </div>
         
+        <div class="card" id="settings-card">
+            <div class="card-header collapsible collapsed" onclick="toggleSection('settings')">
+                <div class="card-title" data-i18n="settings">Settings</div>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div class="card-body collapsed" id="settings-body">
+                <div class="settings-form">
+                    <div class="setting-group">
+                        <h4>🚀 <span data-i18n="autostartConfig">Autostart Configuration</span></h4>
+                        
+                        <div class="autostart-status" id="autostart-status">
+                            <span class="autostart-status-dot"></span>
+                            <span id="autostart-status-text" data-i18n="autostartDisabled">Autostart Disabled</span>
+                        </div>
+                        
+                        <div class="setting-row">
+                            <label data-i18n="enable">Enable:</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autostart-toggle" onchange="toggleAutostartPreview()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-status inactive" id="autostart-toggle-status">OFF</span>
+                        </div>
+                        
+                        <div class="setting-row">
+                            <label data-i18n="region">Region:</label>
+                            <select id="autostart-config" class="setting-select">
+                                <option value="" data-i18n="selectConfig">-- Select Config --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="warning-box" style="border-color: var(--success); background: rgba(76, 175, 80, 0.1);">
+                            <h5 style="color: var(--success);">💡 <span data-i18n="info">Info</span></h5>
+                            <p data-i18n="autostartInfo">When enabled, LobbyShift will automatically connect to the selected VPN region when the server starts or reboots.</p>
+                        </div>
+                        
+                        <div class="settings-actions">
+                            <button class="btn-primary" onclick="saveAutostartSettings()">💾 <span data-i18n="saveSettings">Save Settings</span></button>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <h4>🏷️ <span data-i18n="customNames">Custom Region Names</span></h4>
+                        
+                        <p style="color: var(--text-secondary); margin-bottom: 15px; font-size: 0.9rem;" data-i18n="customNamesDesc">
+                            Give your VPN configs friendly names (e.g. "Bot Lobbies" instead of "mx-free-47")
+                        </p>
+                        
+                        <div id="config-names-list" class="config-names-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                        
+                        <div class="settings-actions">
+                            <button class="btn-primary" onclick="saveConfigNames()">💾 <span data-i18n="saveNames">Save Names</span></button>
+                            <button class="btn-secondary" onclick="clearAllNames()">🗑️ <span data-i18n="clearAll">Clear All</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="setup-info">
-            <h3>⚙ Console Configuration</h3>
+            <h3>⚙ <span data-i18n="consoleConfig">Console Configuration</span></h3>
             <div class="setup-steps">
-                <p>Set your PS5/Xbox network gateway to this server:</p>
+                <p data-i18n="consoleConfigDesc">Set your PS5/Xbox network gateway to this server:</p>
                 <p style="margin-top: 10px;">
-                    <strong>Gateway:</strong> <code>{{ server_ip }}</code><br>
-                    <strong>DNS:</strong> <code>8.8.8.8</code> or your router IP
+                    <strong data-i18n="gateway">Gateway:</strong> <code>{{ server_ip }}</code><br>
+                    <strong data-i18n="dns">DNS:</strong> <code>8.8.8.8</code> <span data-i18n="orRouterIp">or your router IP</span>
                 </p>
             </div>
         </div>
@@ -902,14 +1280,14 @@
     <div id="edit-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modal-title">Edit Config</h3>
+                <h3 id="modal-title" data-i18n="editConfig">Edit Config</h3>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <textarea id="config-editor"></textarea>
                 <div class="actions" style="margin-top: 15px;">
-                    <button class="btn-primary" onclick="saveConfig()">Save</button>
-                    <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn-primary" onclick="saveConfig()" data-i18n="save">Save</button>
+                    <button class="btn-secondary" onclick="closeModal()" data-i18n="cancel">Cancel</button>
                 </div>
             </div>
         </div>
@@ -924,7 +1302,7 @@
             <div class="modal-body">
                 <div id="info-modal-body" style="color: var(--text-secondary); line-height: 1.8;"></div>
                 <div class="actions" style="margin-top: 20px;">
-                    <button class="btn-primary" onclick="closeInfoModal()">Roger That</button>
+                    <button class="btn-primary" onclick="closeInfoModal()" data-i18n="rogerThat">Roger That</button>
                 </div>
             </div>
         </div>
@@ -936,6 +1314,321 @@
         let currentEditConfig = null;
         let currentRegionTimezone = null;
         let allConfigs = [];
+        let configNames = {};
+        let currentLang = localStorage.getItem('lobbyshift_lang') || 'en';
+        
+        // Translations
+        const translations = {
+            en: {
+                tagline: "Tactical Matchmaking Control",
+                systemStatus: "System Status",
+                online: "Online",
+                offline: "Offline",
+                activeConfig: "Active Config",
+                endpoint: "Endpoint",
+                lastHandshake: "Last Handshake",
+                transfer: "Transfer",
+                deployVpn: "Deploy VPN",
+                disconnect: "Disconnect",
+                refresh: "Refresh",
+                vpnRegions: "VPN Regions",
+                noActiveRegion: "No active region",
+                noRegions: "No regions deployed. Upload a WireGuard config to begin.",
+                deployNewRegion: "Deploy New Region",
+                dropConfig: "Drop WireGuard config here",
+                operationLog: "Operation Log",
+                noLogs: "No operations logged",
+                settings: "Settings",
+                autostartConfig: "Autostart Configuration",
+                autostartDisabled: "Autostart Disabled",
+                enable: "Enable",
+                region: "Region",
+                selectConfig: "-- Select Config --",
+                autostartInfo: "When enabled, LobbyShift will automatically connect to the selected VPN region when the server starts or reboots.",
+                saveSettings: "Save Settings",
+                customNames: "Custom Region Names",
+                customNamesDesc: "Give your VPN configs friendly names (e.g. \"Bot Lobbies\" instead of \"mx-free-47\")",
+                enterCustomName: "Enter custom name...",
+                saveNames: "Save Names",
+                clearAll: "Clear All",
+                consoleConfig: "Console Configuration",
+                consoleConfigDesc: "Set your PS5/Xbox network gateway to this server:",
+                gateway: "Gateway",
+                dns: "DNS",
+                orRouterIp: "or your router IP",
+                deploy: "Deploy",
+                active: "Active",
+                edit: "Edit",
+                delete: "Delete",
+                editConfig: "Edit Config",
+                save: "Save",
+                cancel: "Cancel",
+                missionUpdated: "Mission Updated",
+                regionDeployed: "Region deployed successfully!",
+                restartGame: "Restart your game to apply new matchmaking region.",
+                newLobbies: "New lobbies will use the updated location.",
+                rogerThat: "Roger That",
+                localTime: "Local Time",
+                info: "Info",
+                deployedTo: "Deployed to",
+                disconnectedFrom: "Disconnected from"
+            },
+            de: {
+                tagline: "Taktische Matchmaking-Steuerung",
+                systemStatus: "Systemstatus",
+                online: "Online",
+                offline: "Offline",
+                activeConfig: "Aktive Konfiguration",
+                endpoint: "Endpunkt",
+                lastHandshake: "Letzter Handshake",
+                transfer: "Übertragung",
+                deployVpn: "VPN Starten",
+                disconnect: "Trennen",
+                refresh: "Aktualisieren",
+                vpnRegions: "VPN Regionen",
+                noActiveRegion: "Keine aktive Region",
+                noRegions: "Keine Regionen vorhanden. Lade eine WireGuard-Konfiguration hoch.",
+                deployNewRegion: "Neue Region hinzufügen",
+                dropConfig: "WireGuard-Konfiguration hier ablegen",
+                operationLog: "Verbindungsprotokoll",
+                noLogs: "Keine Einträge vorhanden",
+                settings: "Einstellungen",
+                autostartConfig: "Autostart-Konfiguration",
+                autostartDisabled: "Autostart deaktiviert",
+                enable: "Aktivieren",
+                region: "Region",
+                selectConfig: "-- Konfiguration wählen --",
+                autostartInfo: "Wenn aktiviert, verbindet sich LobbyShift automatisch mit der gewählten VPN-Region beim Serverstart.",
+                saveSettings: "Einstellungen speichern",
+                customNames: "Benutzerdefinierte Namen",
+                customNamesDesc: "Gib deinen VPN-Konfigurationen eigene Namen (z.B. \"Bot Lobbies\" statt \"mx-free-47\")",
+                enterCustomName: "Namen eingeben...",
+                saveNames: "Namen speichern",
+                clearAll: "Alle löschen",
+                consoleConfig: "Konsolen-Konfiguration",
+                consoleConfigDesc: "Setze das Gateway deiner PS5/Xbox auf diesen Server:",
+                gateway: "Gateway",
+                dns: "DNS",
+                orRouterIp: "oder deine Router-IP",
+                deploy: "Aktivieren",
+                active: "Aktiv",
+                edit: "Bearbeiten",
+                delete: "Löschen",
+                editConfig: "Konfiguration bearbeiten",
+                save: "Speichern",
+                cancel: "Abbrechen",
+                missionUpdated: "Region gewechselt",
+                regionDeployed: "Region erfolgreich aktiviert!",
+                restartGame: "Starte dein Spiel neu, um die neue Matchmaking-Region zu übernehmen.",
+                newLobbies: "Neue Lobbys werden den aktualisierten Standort verwenden.",
+                rogerThat: "Verstanden",
+                localTime: "Ortszeit",
+                info: "Info",
+                deployedTo: "Verbunden mit",
+                disconnectedFrom: "Getrennt von"
+            },
+            fr: {
+                tagline: "Contrôle Tactique du Matchmaking",
+                systemStatus: "État du Système",
+                online: "En ligne",
+                offline: "Hors ligne",
+                activeConfig: "Config Active",
+                endpoint: "Point d'accès",
+                lastHandshake: "Dernière connexion",
+                transfer: "Transfert",
+                deployVpn: "Démarrer VPN",
+                disconnect: "Déconnecter",
+                refresh: "Actualiser",
+                vpnRegions: "Régions VPN",
+                noActiveRegion: "Aucune région active",
+                noRegions: "Aucune région. Téléchargez une config WireGuard.",
+                deployNewRegion: "Ajouter une Région",
+                dropConfig: "Déposez la config WireGuard ici",
+                operationLog: "Journal des Opérations",
+                noLogs: "Aucune opération enregistrée",
+                settings: "Paramètres",
+                autostartConfig: "Configuration Autostart",
+                autostartDisabled: "Autostart désactivé",
+                enable: "Activer",
+                region: "Région",
+                selectConfig: "-- Choisir config --",
+                autostartInfo: "Si activé, LobbyShift se connectera automatiquement à la région VPN sélectionnée au démarrage du serveur.",
+                saveSettings: "Enregistrer",
+                customNames: "Noms Personnalisés",
+                customNamesDesc: "Donnez des noms à vos configs VPN (ex: \"Bot Lobbies\" au lieu de \"mx-free-47\")",
+                enterCustomName: "Entrer un nom...",
+                saveNames: "Enregistrer Noms",
+                clearAll: "Tout Effacer",
+                consoleConfig: "Configuration Console",
+                consoleConfigDesc: "Définissez la passerelle de votre PS5/Xbox sur ce serveur:",
+                gateway: "Passerelle",
+                dns: "DNS",
+                orRouterIp: "ou l'IP de votre routeur",
+                deploy: "Déployer",
+                active: "Actif",
+                edit: "Modifier",
+                delete: "Supprimer",
+                editConfig: "Modifier Config",
+                save: "Enregistrer",
+                cancel: "Annuler",
+                missionUpdated: "Région Changée",
+                regionDeployed: "Région déployée avec succès!",
+                restartGame: "Redémarrez votre jeu pour appliquer la nouvelle région.",
+                newLobbies: "Les nouveaux lobbies utiliseront le nouvel emplacement.",
+                rogerThat: "Compris",
+                localTime: "Heure Locale",
+                info: "Info",
+                deployedTo: "Connecté à",
+                disconnectedFrom: "Déconnecté de"
+            },
+            it: {
+                tagline: "Controllo Tattico del Matchmaking",
+                systemStatus: "Stato Sistema",
+                online: "Online",
+                offline: "Offline",
+                activeConfig: "Config Attiva",
+                endpoint: "Endpoint",
+                lastHandshake: "Ultimo Handshake",
+                transfer: "Trasferimento",
+                deployVpn: "Avvia VPN",
+                disconnect: "Disconnetti",
+                refresh: "Aggiorna",
+                vpnRegions: "Regioni VPN",
+                noActiveRegion: "Nessuna regione attiva",
+                noRegions: "Nessuna regione. Carica una config WireGuard.",
+                deployNewRegion: "Aggiungi Regione",
+                dropConfig: "Trascina la config WireGuard qui",
+                operationLog: "Registro Operazioni",
+                noLogs: "Nessuna operazione registrata",
+                settings: "Impostazioni",
+                autostartConfig: "Configurazione Autostart",
+                autostartDisabled: "Autostart disabilitato",
+                enable: "Attiva",
+                region: "Regione",
+                selectConfig: "-- Seleziona config --",
+                autostartInfo: "Se abilitato, LobbyShift si connetterà automaticamente alla regione VPN selezionata all'avvio del server.",
+                saveSettings: "Salva Impostazioni",
+                customNames: "Nomi Personalizzati",
+                customNamesDesc: "Dai nomi alle tue config VPN (es: \"Bot Lobbies\" invece di \"mx-free-47\")",
+                enterCustomName: "Inserisci nome...",
+                saveNames: "Salva Nomi",
+                clearAll: "Cancella Tutto",
+                consoleConfig: "Configurazione Console",
+                consoleConfigDesc: "Imposta il gateway della tua PS5/Xbox su questo server:",
+                gateway: "Gateway",
+                dns: "DNS",
+                orRouterIp: "o l'IP del tuo router",
+                deploy: "Attiva",
+                active: "Attivo",
+                edit: "Modifica",
+                delete: "Elimina",
+                editConfig: "Modifica Config",
+                save: "Salva",
+                cancel: "Annulla",
+                missionUpdated: "Regione Cambiata",
+                regionDeployed: "Regione attivata con successo!",
+                restartGame: "Riavvia il gioco per applicare la nuova regione.",
+                newLobbies: "Le nuove lobby useranno la nuova posizione.",
+                rogerThat: "Capito",
+                localTime: "Ora Locale",
+                info: "Info",
+                deployedTo: "Connesso a",
+                disconnectedFrom: "Disconnesso da"
+            },
+            es: {
+                tagline: "Control Táctico de Matchmaking",
+                systemStatus: "Estado del Sistema",
+                online: "En línea",
+                offline: "Desconectado",
+                activeConfig: "Config Activa",
+                endpoint: "Punto de acceso",
+                lastHandshake: "Última conexión",
+                transfer: "Transferencia",
+                deployVpn: "Iniciar VPN",
+                disconnect: "Desconectar",
+                refresh: "Actualizar",
+                vpnRegions: "Regiones VPN",
+                noActiveRegion: "Sin región activa",
+                noRegions: "Sin regiones. Sube una config WireGuard.",
+                deployNewRegion: "Añadir Región",
+                dropConfig: "Arrastra la config WireGuard aquí",
+                operationLog: "Registro de Operaciones",
+                noLogs: "Sin operaciones registradas",
+                settings: "Configuración",
+                autostartConfig: "Configuración Autostart",
+                autostartDisabled: "Autostart desactivado",
+                enable: "Activar",
+                region: "Región",
+                selectConfig: "-- Seleccionar config --",
+                autostartInfo: "Si está activado, LobbyShift se conectará automáticamente a la región VPN seleccionada al iniciar el servidor.",
+                saveSettings: "Guardar Configuración",
+                customNames: "Nombres Personalizados",
+                customNamesDesc: "Dale nombres a tus configs VPN (ej: \"Bot Lobbies\" en vez de \"mx-free-47\")",
+                enterCustomName: "Introducir nombre...",
+                saveNames: "Guardar Nombres",
+                clearAll: "Borrar Todo",
+                consoleConfig: "Configuración de Consola",
+                consoleConfigDesc: "Configura el gateway de tu PS5/Xbox a este servidor:",
+                gateway: "Gateway",
+                dns: "DNS",
+                orRouterIp: "o la IP de tu router",
+                deploy: "Activar",
+                active: "Activo",
+                edit: "Editar",
+                delete: "Eliminar",
+                editConfig: "Editar Config",
+                save: "Guardar",
+                cancel: "Cancelar",
+                missionUpdated: "Región Cambiada",
+                regionDeployed: "¡Región activada con éxito!",
+                restartGame: "Reinicia tu juego para aplicar la nueva región.",
+                newLobbies: "Los nuevos lobbies usarán la nueva ubicación.",
+                rogerThat: "Entendido",
+                localTime: "Hora Local",
+                info: "Info",
+                deployedTo: "Conectado a",
+                disconnectedFrom: "Desconectado de"
+            }
+        };
+        
+        function t(key) {
+            return translations[currentLang]?.[key] || translations['en'][key] || key;
+        }
+        
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lobbyshift_lang', lang);
+            document.getElementById('language-select').value = lang;
+            updateAllTranslations();
+        }
+        
+        function updateAllTranslations() {
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.textContent = t(key);
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = t(key);
+            });
+            
+            // Re-render dynamic content
+            if (allConfigs.length > 0) {
+                renderConfigs(allConfigs);
+                updateActiveSummary();
+            }
+            renderLogs(lastLogs || []);
+            if (settingsLoaded) {
+                renderConfigNamesList(lastAvailableConfigs || []);
+            }
+        }
+        
+        let lastLogs = [];
+        let lastAvailableConfigs = [];
+        let settingsLoaded = false;
         
         // Country to timezone mapping
         const countryTimezones = {
@@ -1045,15 +1738,19 @@
             const activeConfig = allConfigs.find(c => c.active);
             
             if (!activeConfig) {
-                summary.innerHTML = '<span style="color: var(--text-muted);">No active region</span>';
+                summary.innerHTML = `<span style="color: var(--text-muted);">${t('noActiveRegion')}</span>`;
                 return;
             }
             
             const localTime = getLocalTimeForCountry(activeConfig.country?.name);
+            const customName = configNames[activeConfig.name];
+            const displayName = customName || activeConfig.country?.name || 'Unknown';
+            const showOriginal = customName ? activeConfig.name : null;
+            
             summary.innerHTML = `
                 <span class="config-flag">${activeConfig.country?.flag || '🌍'}</span>
                 <div class="config-info">
-                    <div class="config-name">${activeConfig.country?.name || 'Unknown'} (${activeConfig.name})</div>
+                    <div class="config-name">${displayName}${showOriginal ? ` (${showOriginal})` : ''}</div>
                     <div class="config-meta">
                         <span class="config-endpoint">${activeConfig.endpoint}</span>
                         ${localTime ? `<span class="config-time">🕐 ${localTime}</span>` : ''}
@@ -1061,23 +1758,6 @@
                 </div>
             `;
         }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            refreshStatus();
-            loadConfigs();
-            loadLogs();
-            setupDragDrop();
-            setInterval(refreshStatus, 10000);
-            setInterval(updateRegionClock, 1000);
-            setInterval(() => {
-                // Update times in config list
-                if (allConfigs.length > 0) {
-                    renderConfigs(allConfigs);
-                    updateActiveSummary();
-                }
-            }, 60000); // Update every minute
-        });
         
         async function api(endpoint, method = 'GET', body = null) {
             const options = { method };
@@ -1154,7 +1834,7 @@
             const list = document.getElementById('config-list');
             
             if (configs.length === 0) {
-                list.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">No regions deployed. Upload a WireGuard config to begin.</p>';
+                list.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 20px;">${t('noRegions')}</p>`;
                 return;
             }
             
@@ -1168,6 +1848,10 @@
             
             list.innerHTML = configs.map(config => {
                 const localTime = getLocalTimeForCountry(config.country?.name);
+                const customName = configNames[config.name];
+                const displayName = customName || config.country?.name || 'Unknown';
+                const showOriginal = customName ? config.name : null;
+                
                 return `
                 <div class="config-item ${config.active ? 'active' : ''} ${config.favorite ? 'favorite' : ''}">
                     <div class="config-info">
@@ -1177,8 +1861,8 @@
                         <div class="config-details">
                             <div class="config-name">
                                 <span class="config-flag">${config.country?.flag || '🌍'}</span>
-                                ${config.country?.name || 'Unknown'} 
-                                <span style="color: var(--text-muted); font-weight: 400;">(${config.name})</span>
+                                ${displayName}
+                                ${showOriginal ? `<span style="color: var(--text-muted); font-weight: 400;">(${showOriginal})</span>` : ''}
                                 ${config.active ? ' ✓' : ''}
                             </div>
                             <div class="config-meta">
@@ -1189,10 +1873,10 @@
                     </div>
                     <div class="config-actions">
                         <button class="btn-primary" onclick="event.stopPropagation(); switchConfig('${config.name}')" ${config.active ? 'disabled' : ''}>
-                            ${config.active ? 'Active' : 'Deploy'}
+                            ${config.active ? t('active') : t('deploy')}
                         </button>
-                        <button class="btn-secondary" onclick="event.stopPropagation(); editConfig('${config.name}')">Edit</button>
-                        <button class="btn-danger" onclick="event.stopPropagation(); deleteConfig('${config.name}')">Delete</button>
+                        <button class="btn-secondary" onclick="event.stopPropagation(); editConfig('${config.name}')">${t('edit')}</button>
+                        <button class="btn-danger" onclick="event.stopPropagation(); deleteConfig('${config.name}')">${t('delete')}</button>
                     </div>
                 </div>
             `}).join('');
@@ -1222,9 +1906,10 @@
         }
         
         function renderLogs(logs) {
+            lastLogs = logs;
             const container = document.getElementById('logs-container');
             if (!logs || logs.length === 0) {
-                container.innerHTML = '<div class="empty-logs">No operations logged</div>';
+                container.innerHTML = `<div class="empty-logs">${t('noLogs')}</div>`;
                 return;
             }
             container.innerHTML = logs.slice(0, 20).map(log => {
@@ -1237,7 +1922,7 @@
                         <span class="log-icon ${iconClass}">${icon}</span>
                         <div class="log-details">
                             <div>
-                                <span class="log-action">${log.action === 'connected' ? 'Deployed to' : 'Disconnected from'}</span>
+                                <span class="log-action">${log.action === 'connected' ? t('deployedTo') : t('disconnectedFrom')}</span>
                                 <span class="log-config">${log.config || 'Unknown'}</span>
                             </div>
                             ${log.details ? `<div class="log-extra">${log.details}</div>` : ''}
@@ -1286,12 +1971,12 @@
         
         async function switchConfig(name) {
             try {
-                showToast(`Deploying ${name}...`, 'success');
+                showToast(`${t('deploy')}...`, 'success');
                 await api(`/switch/${name}`, 'POST');
                 await refreshStatus();
                 await loadConfigs();
                 await loadLogs();
-                showModal('Mission Updated', 'Region deployed successfully!<br><br>⚠️ <strong>Restart your game</strong> to apply new matchmaking region.<br><br>New lobbies will use the updated location.');
+                showModal(t('missionUpdated'), `${t('regionDeployed')}<br><br>⚠️ <strong>${t('restartGame')}</strong><br><br>${t('newLobbies')}`);
             } catch (e) {
                 showToast('Deployment failed', 'error');
             }
@@ -1301,7 +1986,7 @@
             try {
                 const data = await api(`/configs/${name}`);
                 currentEditConfig = name;
-                document.getElementById('modal-title').textContent = `Edit: ${name}`;
+                document.getElementById('modal-title').textContent = `${t('edit')}: ${name}`;
                 document.getElementById('config-editor').value = data.content;
                 document.getElementById('edit-modal').classList.add('active');
             } catch (e) {
@@ -1390,6 +2075,234 @@
             toast.className = `toast ${type} show`;
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
+        
+        // Settings Functions
+        async function loadSettings() {
+            try {
+                const response = await api('/settings');
+                
+                // Store config names globally
+                configNames = response.config_names || {};
+                lastAvailableConfigs = response.available_configs || [];
+                settingsLoaded = true;
+                
+                // Populate config dropdown
+                const select = document.getElementById('autostart-config');
+                select.innerHTML = `<option value="">${t('selectConfig')}</option>`;
+                
+                if (response.available_configs) {
+                    response.available_configs.forEach(name => {
+                        const option = document.createElement('option');
+                        option.value = name;
+                        const displayName = configNames[name] || name;
+                        option.textContent = displayName;
+                        if (name === response.autostart_config) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                    
+                    // Render config names list
+                    renderConfigNamesList(response.available_configs);
+                }
+                
+                document.getElementById('autostart-toggle').checked = response.autostart || false;
+                updateAutostartStatusUI(response.autostart, response.autostart_config);
+                
+                // Re-render configs with custom names
+                if (allConfigs.length > 0) {
+                    renderConfigs(allConfigs);
+                }
+            } catch (e) {
+                console.error('Failed to load settings:', e);
+            }
+        }
+        
+        function renderConfigNamesList(configs) {
+            lastAvailableConfigs = configs || [];
+            const list = document.getElementById('config-names-list');
+            if (!configs || configs.length === 0) {
+                list.innerHTML = `<p style="color: var(--text-muted);">${t('noRegions')}</p>`;
+                return;
+            }
+            
+            // Get country info for each config
+            const configCountries = {};
+            allConfigs.forEach(c => {
+                configCountries[c.name] = c.country;
+            });
+            
+            list.innerHTML = configs.map(name => {
+                const country = configCountries[name];
+                const flag = country?.flag || '🌍';
+                const customName = configNames[name] || '';
+                return `
+                    <div class="config-name-item">
+                        <div class="config-original">
+                            <span class="flag">${flag}</span>
+                            <span>${name}</span>
+                        </div>
+                        <span class="arrow">→</span>
+                        <input type="text" 
+                               id="name-${name}" 
+                               value="${customName}" 
+                               placeholder="${t('enterCustomName')}">
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        async function saveConfigNames() {
+            const inputs = document.querySelectorAll('.config-name-item input');
+            const newNames = {};
+            
+            inputs.forEach(input => {
+                const configName = input.id.replace('name-', '');
+                const customName = input.value.trim();
+                if (customName) {
+                    newNames[configName] = customName;
+                }
+            });
+            
+            try {
+                showToast('Saving names...', 'success');
+                await api('/settings/config-names', 'POST', { config_names: newNames });
+                configNames = newNames;
+                
+                // Re-render configs with new names
+                if (allConfigs.length > 0) {
+                    renderConfigs(allConfigs);
+                    updateActiveSummary();
+                }
+                
+                // Update autostart dropdown directly
+                updateAutostartDropdown();
+                
+                showToast('Names saved!', 'success');
+            } catch (e) {
+                showToast('Failed to save names', 'error');
+                console.error(e);
+            }
+        }
+        
+        function updateAutostartDropdown() {
+            const select = document.getElementById('autostart-config');
+            const currentValue = select.value;
+            
+            select.innerHTML = `<option value="">${t('selectConfig')}</option>`;
+            
+            lastAvailableConfigs.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                // Wenn kein custom name existiert, zeige den Original-Dateinamen
+                option.textContent = configNames[name] || name;
+                if (name === currentValue) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+        
+        async function clearAllNames() {
+            if (!confirm('Clear all custom names?')) return;
+            
+            try {
+                await api('/settings/config-names', 'POST', { config_names: {} });
+                configNames = {};
+                
+                // Clear inputs
+                document.querySelectorAll('.config-name-item input').forEach(input => {
+                    input.value = '';
+                });
+                
+                // Re-render
+                if (allConfigs.length > 0) {
+                    renderConfigs(allConfigs);
+                    updateActiveSummary();
+                }
+                
+                // Update dropdown to show original names
+                updateAutostartDropdown();
+                showToast('Names cleared', 'success');
+            } catch (e) {
+                showToast('Failed to clear names', 'error');
+            }
+        }
+        
+        function updateAutostartStatusUI(enabled, configName) {
+            const status = document.getElementById('autostart-status');
+            const statusText = document.getElementById('autostart-status-text');
+            const toggleStatus = document.getElementById('autostart-toggle-status');
+            
+            if (enabled && configName) {
+                status.classList.add('active');
+                statusText.textContent = `Autostart: ${configName}`;
+                toggleStatus.textContent = 'ON';
+                toggleStatus.classList.remove('inactive');
+                toggleStatus.classList.add('active');
+            } else {
+                status.classList.remove('active');
+                statusText.textContent = 'Autostart Disabled';
+                toggleStatus.textContent = 'OFF';
+                toggleStatus.classList.remove('active');
+                toggleStatus.classList.add('inactive');
+            }
+        }
+        
+        function toggleAutostartPreview() {
+            const enabled = document.getElementById('autostart-toggle').checked;
+            const toggleStatus = document.getElementById('autostart-toggle-status');
+            
+            toggleStatus.textContent = enabled ? 'ON' : 'OFF';
+            toggleStatus.classList.toggle('active', enabled);
+            toggleStatus.classList.toggle('inactive', !enabled);
+        }
+        
+        async function saveAutostartSettings() {
+            const autostartEnabled = document.getElementById('autostart-toggle').checked;
+            const autostartConfig = document.getElementById('autostart-config').value;
+            
+            if (autostartEnabled && !autostartConfig) {
+                showToast('Please select a config', 'error');
+                return;
+            }
+            
+            try {
+                showToast('Saving settings...', 'success');
+                
+                const response = await api('/settings/autostart', 'POST', {
+                    autostart: autostartEnabled,
+                    autostart_config: autostartConfig
+                });
+                
+                updateAutostartStatusUI(autostartEnabled, autostartConfig);
+                showToast('Autostart settings saved!', 'success');
+            } catch (e) {
+                showToast('Failed to save settings', 'error');
+                console.error(e);
+            }
+        }
+        
+        // Load settings on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Set language selector to saved language
+            document.getElementById('language-select').value = currentLang;
+            updateAllTranslations();
+            
+            refreshStatus();
+            await loadConfigs(); // Load configs first to get allConfigs with flags
+            await loadSettings(); // Then load settings which needs allConfigs
+            loadLogs();
+            setupDragDrop();
+            setInterval(refreshStatus, 10000);
+            setInterval(updateRegionClock, 1000);
+            setInterval(() => {
+                if (allConfigs.length > 0) {
+                    renderConfigs(allConfigs);
+                    updateActiveSummary();
+                }
+            }, 60000);
+        });
         
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') { closeModal(); closeInfoModal(); }

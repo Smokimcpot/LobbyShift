@@ -265,6 +265,116 @@ async def api_clear_logs():
 
 
 # =============================================================================
+# Settings API
+# =============================================================================
+
+CONFIG_NAMES_FILE = CONFIG_DIR / "config_names.json"
+
+def load_config_names() -> dict:
+    """Load custom config names from file"""
+    import json
+    if CONFIG_NAMES_FILE.exists():
+        try:
+            with open(CONFIG_NAMES_FILE) as f:
+                return json.load(f)
+        except:
+            pass
+    return {}
+
+
+def save_config_names(names: dict):
+    """Save custom config names to file"""
+    import json
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    with open(CONFIG_NAMES_FILE, 'w') as f:
+        json.dump(names, f, indent=2)
+
+
+@app.get("/api/settings")
+async def api_get_settings():
+    """Get current settings"""
+    cfg = load_config()
+    configs = wg_manager.list_configs()
+    config_names = load_config_names()
+    
+    return {
+        "autostart": cfg.autostart,
+        "autostart_config": cfg.autostart_config,
+        "available_configs": [c["name"] for c in configs],
+        "config_names": config_names
+    }
+
+
+@app.post("/api/settings/autostart")
+async def api_update_autostart(request: Request):
+    """Update autostart settings"""
+    from .config import save_config
+    
+    body = await request.json()
+    autostart_enabled = body.get("autostart", False)
+    autostart_config = body.get("autostart_config", "")
+    
+    # Validate config exists if enabling
+    if autostart_enabled and autostart_config:
+        configs = wg_manager.list_configs()
+        config_names = [c["name"] for c in configs]
+        if autostart_config not in config_names:
+            raise HTTPException(status_code=400, detail="Config not found")
+    
+    try:
+        # Update and save config
+        cfg = load_config()
+        cfg.autostart = autostart_enabled
+        cfg.autostart_config = autostart_config if autostart_enabled else ""
+        save_config(cfg)
+        
+        return {
+            "message": "Autostart settings updated",
+            "autostart": cfg.autostart,
+            "autostart_config": cfg.autostart_config
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/settings/config-names")
+async def api_get_config_names():
+    """Get custom config names"""
+    return {"config_names": load_config_names()}
+
+
+@app.post("/api/settings/config-names")
+async def api_update_config_names(request: Request):
+    """Update custom config names"""
+    body = await request.json()
+    config_names = body.get("config_names", {})
+    
+    try:
+        save_config_names(config_names)
+        return {"message": "Config names updated", "config_names": config_names}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.put("/api/settings/config-names/{config_name}")
+async def api_set_config_name(config_name: str, request: Request):
+    """Set custom name for a specific config"""
+    body = await request.json()
+    custom_name = body.get("custom_name", "").strip()
+    
+    try:
+        names = load_config_names()
+        if custom_name:
+            names[config_name] = custom_name
+        elif config_name in names:
+            del names[config_name]
+        save_config_names(names)
+        return {"message": "Config name updated", "config": config_name, "custom_name": custom_name}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
 # Main
 # =============================================================================
 
