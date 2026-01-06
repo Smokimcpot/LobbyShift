@@ -235,6 +235,10 @@ sudo ./uninstall.sh
 http://<SERVER-IP>:8080
 ```
 
+<p align="center">
+  <img src="docs/images/webui.png" alt="LobbyShift Web Interface" width="800">
+</p>
+
 ### 2. Upload VPN Configs
 
 1. Acquire WireGuard configs from VPN provider
