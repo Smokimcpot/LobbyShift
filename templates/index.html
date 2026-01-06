@@ -195,7 +195,14 @@
         }
         
         .active-summary .config-flag {
-            font-size: 1.8rem;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 2px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         
         .active-summary .config-info {
@@ -310,7 +317,14 @@
         }
         
         .region-flag {
-            font-size: 2.5rem;
+            font-size: 2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 4px 6px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         
         .region-details h3 {
@@ -480,7 +494,14 @@
         }
         
         .config-flag {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 2px 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         
         .config-meta {
@@ -492,7 +513,7 @@
         
         .config-endpoint {
             font-size: 0.85rem;
-            color: var(--text-muted);
+            color: var(--text-primary);
             font-family: monospace;
         }
         
@@ -1017,7 +1038,14 @@
         }
         
         .config-name-item .config-original .flag {
-            font-size: 1.2rem;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            padding: 2px 3px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         
         .config-name-item .arrow {
@@ -1048,7 +1076,8 @@
         @media (max-width: 600px) {
             .container { padding: 15px; }
             .logo { font-size: 2.2rem; letter-spacing: 4px; }
-            .card-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .card-header { flex-direction: row; gap: 10px; align-items: center; }
+            .card-header.collapsed .collapse-icon { transform: rotate(-90deg); }
             .status-grid { grid-template-columns: 1fr; }
             .actions { flex-direction: column; }
             .config-item { flex-direction: column; gap: 12px; align-items: flex-start; }
@@ -1057,8 +1086,21 @@
             .region-time { flex-direction: column; gap: 15px; text-align: center; }
             .region-clock { text-align: center; }
             .config-meta { flex-direction: column; align-items: flex-start; gap: 5px; }
-            .active-summary { flex-direction: column; text-align: center; }
-            .active-summary .config-meta { justify-content: center; }
+            .active-summary { 
+                flex-direction: row; 
+                text-align: left; 
+                padding: 12px 15px;
+                gap: 12px;
+            }
+            .active-summary .config-flag { font-size: 1rem; }
+            .active-summary .config-info { flex: 1; }
+            .active-summary .config-name { font-size: 1rem; }
+            .active-summary .config-meta { 
+                flex-direction: row; 
+                flex-wrap: wrap;
+                gap: 8px;
+                font-size: 0.8rem;
+            }
             .setting-row { flex-direction: column; align-items: flex-start; gap: 10px; }
             .setting-row label { min-width: auto; }
             .setting-row input[type="text"], .setting-select { max-width: 100%; width: 100%; }
@@ -1099,7 +1141,36 @@
             background: var(--bg-card);
             color: var(--text-primary);
         }
+        
+        /* Twemoji flag sizing */
+        img.emoji {
+            height: 1em;
+            width: 1em;
+            margin: 0 .05em 0 .1em;
+            vertical-align: -0.1em;
+        }
+        
+        .config-flag img.emoji {
+            height: 1.3em;
+            width: 1.3em;
+        }
+        
+        .active-summary .config-flag img.emoji {
+            height: 1.2em;
+            width: 1.2em;
+        }
+        
+        .region-flag img.emoji {
+            height: 1.8em;
+            width: 1.8em;
+        }
+        
+        .config-name-item .flag img.emoji {
+            height: 1.1em;
+            width: 1.1em;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container">
@@ -1187,6 +1258,10 @@
                     </div>
                 </div>
                 <input type="file" id="file-input" accept=".conf" onchange="uploadConfig(this.files[0])">
+                
+                <button class="btn-secondary refresh-flags-btn" onclick="event.stopPropagation(); refreshFlags()" style="margin-top: 10px; width: 100%;">
+                    🔄 <span data-i18n="refreshFlags">Refresh Flags</span>
+                </button>
             </div>
         </div>
         
@@ -1336,6 +1411,7 @@
                 noRegions: "No regions deployed. Upload a WireGuard config to begin.",
                 deployNewRegion: "Deploy New Region",
                 dropConfig: "Drop WireGuard config here",
+                refreshFlags: "Refresh Flags",
                 operationLog: "Operation Log",
                 noLogs: "No operations logged",
                 settings: "Settings",
@@ -1390,6 +1466,7 @@
                 noRegions: "Keine Regionen vorhanden. Lade eine WireGuard-Konfiguration hoch.",
                 deployNewRegion: "Neue Region hinzufügen",
                 dropConfig: "WireGuard-Konfiguration hier ablegen",
+                refreshFlags: "Flaggen aktualisieren",
                 operationLog: "Verbindungsprotokoll",
                 noLogs: "Keine Einträge vorhanden",
                 settings: "Einstellungen",
@@ -1444,6 +1521,7 @@
                 noRegions: "Aucune région. Téléchargez une config WireGuard.",
                 deployNewRegion: "Ajouter une Région",
                 dropConfig: "Déposez la config WireGuard ici",
+                refreshFlags: "Actualiser les drapeaux",
                 operationLog: "Journal des Opérations",
                 noLogs: "Aucune opération enregistrée",
                 settings: "Paramètres",
@@ -1498,6 +1576,7 @@
                 noRegions: "Nessuna regione. Carica una config WireGuard.",
                 deployNewRegion: "Aggiungi Regione",
                 dropConfig: "Trascina la config WireGuard qui",
+                refreshFlags: "Aggiorna bandiere",
                 operationLog: "Registro Operazioni",
                 noLogs: "Nessuna operazione registrata",
                 settings: "Impostazioni",
@@ -1552,6 +1631,7 @@
                 noRegions: "Sin regiones. Sube una config WireGuard.",
                 deployNewRegion: "Añadir Región",
                 dropConfig: "Arrastra la config WireGuard aquí",
+                refreshFlags: "Actualizar banderas",
                 operationLog: "Registro de Operaciones",
                 noLogs: "Sin operaciones registradas",
                 settings: "Configuración",
@@ -1632,31 +1712,167 @@
         
         // Country to timezone mapping
         const countryTimezones = {
-            'US': 'America/New_York', 'USA': 'America/New_York', 'United States': 'America/New_York',
-            'MX': 'America/Mexico_City', 'Mexico': 'America/Mexico_City',
-            'JP': 'Asia/Tokyo', 'Japan': 'Asia/Tokyo',
-            'TR': 'Europe/Istanbul', 'Turkey': 'Europe/Istanbul',
-            'EG': 'Africa/Cairo', 'Egypt': 'Africa/Cairo',
-            'ZA': 'Africa/Johannesburg', 'South Africa': 'Africa/Johannesburg',
-            'BR': 'America/Sao_Paulo', 'Brazil': 'America/Sao_Paulo',
+            // A
+            'AF': 'Asia/Kabul', 'Afghanistan': 'Asia/Kabul',
+            'AL': 'Europe/Tirane', 'Albania': 'Europe/Tirane',
+            'DZ': 'Africa/Algiers', 'Algeria': 'Africa/Algiers',
+            'AO': 'Africa/Luanda', 'Angola': 'Africa/Luanda',
             'AR': 'America/Argentina/Buenos_Aires', 'Argentina': 'America/Argentina/Buenos_Aires',
-            'NL': 'Europe/Amsterdam', 'Netherlands': 'Europe/Amsterdam',
-            'DE': 'Europe/Berlin', 'Germany': 'Europe/Berlin',
-            'GB': 'Europe/London', 'UK': 'Europe/London', 'United Kingdom': 'Europe/London',
-            'FR': 'Europe/Paris', 'France': 'Europe/Paris',
-            'ES': 'Europe/Madrid', 'Spain': 'Europe/Madrid',
-            'IT': 'Europe/Rome', 'Italy': 'Europe/Rome',
+            'AM': 'Asia/Yerevan', 'Armenia': 'Asia/Yerevan',
             'AU': 'Australia/Sydney', 'Australia': 'Australia/Sydney',
+            'AT': 'Europe/Vienna', 'Austria': 'Europe/Vienna',
+            'AZ': 'Asia/Baku', 'Azerbaijan': 'Asia/Baku',
+            // B
+            'BH': 'Asia/Bahrain', 'Bahrain': 'Asia/Bahrain',
+            'BD': 'Asia/Dhaka', 'Bangladesh': 'Asia/Dhaka',
+            'BY': 'Europe/Minsk', 'Belarus': 'Europe/Minsk',
+            'BE': 'Europe/Brussels', 'Belgium': 'Europe/Brussels',
+            'BZ': 'America/Belize', 'Belize': 'America/Belize',
+            'BO': 'America/La_Paz', 'Bolivia': 'America/La_Paz',
+            'BA': 'Europe/Sarajevo', 'Bosnia and Herzegovina': 'Europe/Sarajevo',
+            'BW': 'Africa/Gaborone', 'Botswana': 'Africa/Gaborone',
+            'BR': 'America/Sao_Paulo', 'Brazil': 'America/Sao_Paulo',
+            'BN': 'Asia/Brunei', 'Brunei': 'Asia/Brunei',
+            'BG': 'Europe/Sofia', 'Bulgaria': 'Europe/Sofia',
+            // C
+            'KH': 'Asia/Phnom_Penh', 'Cambodia': 'Asia/Phnom_Penh',
+            'CM': 'Africa/Douala', 'Cameroon': 'Africa/Douala',
             'CA': 'America/Toronto', 'Canada': 'America/Toronto',
-            'KR': 'Asia/Seoul', 'South Korea': 'Asia/Seoul',
-            'SG': 'Asia/Singapore', 'Singapore': 'Asia/Singapore',
+            'CL': 'America/Santiago', 'Chile': 'America/Santiago',
+            'CN': 'Asia/Shanghai', 'China': 'Asia/Shanghai',
+            'CO': 'America/Bogota', 'Colombia': 'America/Bogota',
+            'CR': 'America/Costa_Rica', 'Costa Rica': 'America/Costa_Rica',
+            'HR': 'Europe/Zagreb', 'Croatia': 'Europe/Zagreb',
+            'CU': 'America/Havana', 'Cuba': 'America/Havana',
+            'CY': 'Asia/Nicosia', 'Cyprus': 'Asia/Nicosia',
+            'CZ': 'Europe/Prague', 'Czech Republic': 'Europe/Prague', 'Czechia': 'Europe/Prague',
+            // D
+            'DK': 'Europe/Copenhagen', 'Denmark': 'Europe/Copenhagen',
+            'DO': 'America/Santo_Domingo', 'Dominican Republic': 'America/Santo_Domingo',
+            // E
+            'EC': 'America/Guayaquil', 'Ecuador': 'America/Guayaquil',
+            'EG': 'Africa/Cairo', 'Egypt': 'Africa/Cairo',
+            'SV': 'America/El_Salvador', 'El Salvador': 'America/El_Salvador',
+            'EE': 'Europe/Tallinn', 'Estonia': 'Europe/Tallinn',
+            'ET': 'Africa/Addis_Ababa', 'Ethiopia': 'Africa/Addis_Ababa',
+            // F
+            'FI': 'Europe/Helsinki', 'Finland': 'Europe/Helsinki',
+            'FR': 'Europe/Paris', 'France': 'Europe/Paris',
+            // G
+            'GE': 'Asia/Tbilisi', 'Georgia': 'Asia/Tbilisi',
+            'DE': 'Europe/Berlin', 'Germany': 'Europe/Berlin',
+            'GH': 'Africa/Accra', 'Ghana': 'Africa/Accra',
+            'GR': 'Europe/Athens', 'Greece': 'Europe/Athens',
+            'GT': 'America/Guatemala', 'Guatemala': 'America/Guatemala',
+            // H
+            'HN': 'America/Tegucigalpa', 'Honduras': 'America/Tegucigalpa',
+            'HK': 'Asia/Hong_Kong', 'Hong Kong': 'Asia/Hong_Kong',
+            'HU': 'Europe/Budapest', 'Hungary': 'Europe/Budapest',
+            // I
+            'IS': 'Atlantic/Reykjavik', 'Iceland': 'Atlantic/Reykjavik',
             'IN': 'Asia/Kolkata', 'India': 'Asia/Kolkata',
-            'RU': 'Europe/Moscow', 'Russia': 'Europe/Moscow',
+            'ID': 'Asia/Jakarta', 'Indonesia': 'Asia/Jakarta',
+            'IR': 'Asia/Tehran', 'Iran': 'Asia/Tehran',
+            'IQ': 'Asia/Baghdad', 'Iraq': 'Asia/Baghdad',
+            'IE': 'Europe/Dublin', 'Ireland': 'Europe/Dublin',
+            'IL': 'Asia/Jerusalem', 'Israel': 'Asia/Jerusalem',
+            'IT': 'Europe/Rome', 'Italy': 'Europe/Rome',
+            // J
+            'JM': 'America/Jamaica', 'Jamaica': 'America/Jamaica',
+            'JP': 'Asia/Tokyo', 'Japan': 'Asia/Tokyo',
+            'JO': 'Asia/Amman', 'Jordan': 'Asia/Amman',
+            // K
+            'KZ': 'Asia/Almaty', 'Kazakhstan': 'Asia/Almaty',
+            'KE': 'Africa/Nairobi', 'Kenya': 'Africa/Nairobi',
+            'KW': 'Asia/Kuwait', 'Kuwait': 'Asia/Kuwait',
+            'KG': 'Asia/Bishkek', 'Kyrgyzstan': 'Asia/Bishkek',
+            'KR': 'Asia/Seoul', 'South Korea': 'Asia/Seoul', 'Korea': 'Asia/Seoul',
+            // L
+            'LA': 'Asia/Vientiane', 'Laos': 'Asia/Vientiane',
+            'LV': 'Europe/Riga', 'Latvia': 'Europe/Riga',
+            'LB': 'Asia/Beirut', 'Lebanon': 'Asia/Beirut',
+            'LY': 'Africa/Tripoli', 'Libya': 'Africa/Tripoli',
+            'LI': 'Europe/Vaduz', 'Liechtenstein': 'Europe/Vaduz',
+            'LT': 'Europe/Vilnius', 'Lithuania': 'Europe/Vilnius',
+            'LU': 'Europe/Luxembourg', 'Luxembourg': 'Europe/Luxembourg',
+            // M
+            'MO': 'Asia/Macau', 'Macau': 'Asia/Macau',
+            'MY': 'Asia/Kuala_Lumpur', 'Malaysia': 'Asia/Kuala_Lumpur',
+            'MV': 'Indian/Maldives', 'Maldives': 'Indian/Maldives',
+            'MT': 'Europe/Malta', 'Malta': 'Europe/Malta',
+            'MX': 'America/Mexico_City', 'Mexico': 'America/Mexico_City',
+            'MD': 'Europe/Chisinau', 'Moldova': 'Europe/Chisinau',
+            'MC': 'Europe/Monaco', 'Monaco': 'Europe/Monaco',
+            'MN': 'Asia/Ulaanbaatar', 'Mongolia': 'Asia/Ulaanbaatar',
+            'ME': 'Europe/Podgorica', 'Montenegro': 'Europe/Podgorica',
+            'MA': 'Africa/Casablanca', 'Morocco': 'Africa/Casablanca',
+            'MZ': 'Africa/Maputo', 'Mozambique': 'Africa/Maputo',
+            'MM': 'Asia/Yangon', 'Myanmar': 'Asia/Yangon',
+            // N
+            'NA': 'Africa/Windhoek', 'Namibia': 'Africa/Windhoek',
+            'NP': 'Asia/Kathmandu', 'Nepal': 'Asia/Kathmandu',
+            'NL': 'Europe/Amsterdam', 'Netherlands': 'Europe/Amsterdam',
+            'NZ': 'Pacific/Auckland', 'New Zealand': 'Pacific/Auckland',
+            'NI': 'America/Managua', 'Nicaragua': 'America/Managua',
+            'NG': 'Africa/Lagos', 'Nigeria': 'Africa/Lagos',
+            'MK': 'Europe/Skopje', 'North Macedonia': 'Europe/Skopje',
+            'NO': 'Europe/Oslo', 'Norway': 'Europe/Oslo',
+            // O
+            'OM': 'Asia/Muscat', 'Oman': 'Asia/Muscat',
+            // P
+            'PK': 'Asia/Karachi', 'Pakistan': 'Asia/Karachi',
+            'PS': 'Asia/Gaza', 'Palestine': 'Asia/Gaza',
+            'PA': 'America/Panama', 'Panama': 'America/Panama',
+            'PY': 'America/Asuncion', 'Paraguay': 'America/Asuncion',
+            'PE': 'America/Lima', 'Peru': 'America/Lima',
+            'PH': 'Asia/Manila', 'Philippines': 'Asia/Manila',
             'PL': 'Europe/Warsaw', 'Poland': 'Europe/Warsaw',
+            'PT': 'Europe/Lisbon', 'Portugal': 'Europe/Lisbon',
+            'PR': 'America/Puerto_Rico', 'Puerto Rico': 'America/Puerto_Rico',
+            // Q
+            'QA': 'Asia/Qatar', 'Qatar': 'Asia/Qatar',
+            // R
+            'RO': 'Europe/Bucharest', 'Romania': 'Europe/Bucharest',
+            'RU': 'Europe/Moscow', 'Russia': 'Europe/Moscow',
+            'RW': 'Africa/Kigali', 'Rwanda': 'Africa/Kigali',
+            // S
+            'SA': 'Asia/Riyadh', 'Saudi Arabia': 'Asia/Riyadh',
+            'SN': 'Africa/Dakar', 'Senegal': 'Africa/Dakar',
+            'RS': 'Europe/Belgrade', 'Serbia': 'Europe/Belgrade',
+            'SG': 'Asia/Singapore', 'Singapore': 'Asia/Singapore',
+            'SK': 'Europe/Bratislava', 'Slovakia': 'Europe/Bratislava',
+            'SI': 'Europe/Ljubljana', 'Slovenia': 'Europe/Ljubljana',
+            'ZA': 'Africa/Johannesburg', 'South Africa': 'Africa/Johannesburg',
+            'ES': 'Europe/Madrid', 'Spain': 'Europe/Madrid',
+            'LK': 'Asia/Colombo', 'Sri Lanka': 'Asia/Colombo',
+            'SD': 'Africa/Khartoum', 'Sudan': 'Africa/Khartoum',
             'SE': 'Europe/Stockholm', 'Sweden': 'Europe/Stockholm',
             'CH': 'Europe/Zurich', 'Switzerland': 'Europe/Zurich',
-            'KZ': 'Asia/Almaty', 'Kazakhstan': 'Asia/Almaty',
-            'AE': 'Asia/Dubai', 'UAE': 'Asia/Dubai'
+            'SY': 'Asia/Damascus', 'Syria': 'Asia/Damascus',
+            // T
+            'TW': 'Asia/Taipei', 'Taiwan': 'Asia/Taipei',
+            'TJ': 'Asia/Dushanbe', 'Tajikistan': 'Asia/Dushanbe',
+            'TZ': 'Africa/Dar_es_Salaam', 'Tanzania': 'Africa/Dar_es_Salaam',
+            'TH': 'Asia/Bangkok', 'Thailand': 'Asia/Bangkok',
+            'TN': 'Africa/Tunis', 'Tunisia': 'Africa/Tunis',
+            'TR': 'Europe/Istanbul', 'Turkey': 'Europe/Istanbul',
+            'TM': 'Asia/Ashgabat', 'Turkmenistan': 'Asia/Ashgabat',
+            // U
+            'UG': 'Africa/Kampala', 'Uganda': 'Africa/Kampala',
+            'UA': 'Europe/Kiev', 'Ukraine': 'Europe/Kiev',
+            'AE': 'Asia/Dubai', 'UAE': 'Asia/Dubai', 'United Arab Emirates': 'Asia/Dubai',
+            'GB': 'Europe/London', 'UK': 'Europe/London', 'United Kingdom': 'Europe/London',
+            'US': 'America/New_York', 'USA': 'America/New_York', 'United States': 'America/New_York',
+            'UY': 'America/Montevideo', 'Uruguay': 'America/Montevideo',
+            'UZ': 'Asia/Tashkent', 'Uzbekistan': 'Asia/Tashkent',
+            // V
+            'VE': 'America/Caracas', 'Venezuela': 'America/Caracas',
+            'VN': 'Asia/Ho_Chi_Minh', 'Vietnam': 'Asia/Ho_Chi_Minh',
+            // Y
+            'YE': 'Asia/Aden', 'Yemen': 'Asia/Aden',
+            // Z
+            'ZM': 'Africa/Lusaka', 'Zambia': 'Africa/Lusaka',
+            'ZW': 'Africa/Harare', 'Zimbabwe': 'Africa/Harare'
         };
         
         function getTimezoneForCountry(countryName) {
@@ -1757,6 +1973,11 @@
                     </div>
                 </div>
             `;
+            
+            // Parse emojis with Twemoji
+            if (typeof twemoji !== 'undefined') {
+                twemoji.parse(summary);
+            }
         }
         
         async function api(endpoint, method = 'GET', body = null) {
@@ -1830,6 +2051,20 @@
             }
         }
         
+        async function refreshFlags() {
+            try {
+                showToast('Refreshing flags...', 'success');
+                // Clear GeoIP cache to force re-lookup
+                await api('/geoip-cache', 'DELETE');
+                // Reload configs to trigger fresh GeoIP lookups
+                await loadConfigs();
+                showToast('Flags refreshed!', 'success');
+            } catch (e) {
+                showToast('Failed to refresh flags', 'error');
+                console.error('Failed to refresh flags:', e);
+            }
+        }
+        
         function renderConfigs(configs) {
             const list = document.getElementById('config-list');
             
@@ -1880,6 +2115,11 @@
                     </div>
                 </div>
             `}).join('');
+            
+            // Parse emojis with Twemoji for cross-browser flag support
+            if (typeof twemoji !== 'undefined') {
+                twemoji.parse(list);
+            }
         }
         
         async function toggleFavorite(name) {
@@ -1931,6 +2171,11 @@
                     </div>
                 `;
             }).join('');
+            
+            // Parse emojis with Twemoji
+            if (typeof twemoji !== 'undefined') {
+                twemoji.parse(container);
+            }
         }
         
         async function clearLogs() {
@@ -2150,6 +2395,11 @@
                     </div>
                 `;
             }).join('');
+            
+            // Parse emojis with Twemoji
+            if (typeof twemoji !== 'undefined') {
+                twemoji.parse(list);
+            }
         }
         
         async function saveConfigNames() {
@@ -2302,6 +2552,11 @@
                     updateActiveSummary();
                 }
             }, 60000);
+            
+            // Parse all emojis on page with Twemoji for cross-browser support
+            if (typeof twemoji !== 'undefined') {
+                twemoji.parse(document.body);
+            }
         });
         
         document.addEventListener('keydown', e => {

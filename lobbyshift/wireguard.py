@@ -14,21 +14,91 @@ import urllib.request
 import socket
 
 
-# Country code mapping for flags
+# Country code mapping for flags (ALL countries)
 COUNTRY_FLAGS = {
-    "MX": "🇲🇽", "JP": "🇯🇵", "TR": "🇹🇷", "EG": "🇪🇬", "ZA": "🇿🇦",
-    "KZ": "🇰🇿", "BR": "🇧🇷", "AR": "🇦🇷", "CL": "🇨🇱", "CO": "🇨🇴",
-    "PE": "🇵🇪", "IN": "🇮🇳", "PH": "🇵🇭", "ID": "🇮🇩", "TH": "🇹🇭",
-    "VN": "🇻🇳", "MY": "🇲🇾", "SG": "🇸🇬", "KR": "🇰🇷", "TW": "🇹🇼",
-    "HK": "🇭🇰", "AE": "🇦🇪", "SA": "🇸🇦", "IL": "🇮🇱", "RU": "🇷🇺",
-    "UA": "🇺🇦", "PL": "🇵🇱", "DE": "🇩🇪", "FR": "🇫🇷", "GB": "🇬🇧",
-    "UK": "🇬🇧", "ES": "🇪🇸", "IT": "🇮🇹", "NL": "🇳🇱", "SE": "🇸🇪",
-    "NO": "🇳🇴", "FI": "🇫🇮", "DK": "🇩🇰", "CH": "🇨🇭", "AT": "🇦🇹",
-    "BE": "🇧🇪", "PT": "🇵🇹", "CZ": "🇨🇿", "RO": "🇷🇴", "HU": "🇭🇺",
-    "GR": "🇬🇷", "US": "🇺🇸", "CA": "🇨🇦", "AU": "🇦🇺", "NZ": "🇳🇿",
-    "IE": "🇮🇪", "IS": "🇮🇸", "LU": "🇱🇺", "SK": "🇸🇰", "SI": "🇸🇮",
-    "HR": "🇭🇷", "BG": "🇧🇬", "RS": "🇷🇸", "LT": "🇱🇹", "LV": "🇱🇻",
-    "EE": "🇪🇪", "CY": "🇨🇾", "MT": "🇲🇹", "PA": "🇵🇦", "CR": "🇨🇷",
+    # A
+    "AF": "🇦🇫", "AL": "🇦🇱", "DZ": "🇩🇿", "AS": "🇦🇸", "AD": "🇦🇩",
+    "AO": "🇦🇴", "AI": "🇦🇮", "AQ": "🇦🇶", "AG": "🇦🇬", "AR": "🇦🇷",
+    "AM": "🇦🇲", "AW": "🇦🇼", "AU": "🇦🇺", "AT": "🇦🇹", "AZ": "🇦🇿",
+    # B
+    "BS": "🇧🇸", "BH": "🇧🇭", "BD": "🇧🇩", "BB": "🇧🇧", "BY": "🇧🇾",
+    "BE": "🇧🇪", "BZ": "🇧🇿", "BJ": "🇧🇯", "BM": "🇧🇲", "BT": "🇧🇹",
+    "BO": "🇧🇴", "BA": "🇧🇦", "BW": "🇧🇼", "BR": "🇧🇷", "BN": "🇧🇳",
+    "BG": "🇧🇬", "BF": "🇧🇫", "BI": "🇧🇮",
+    # C
+    "KH": "🇰🇭", "CM": "🇨🇲", "CA": "🇨🇦", "CV": "🇨🇻", "KY": "🇰🇾",
+    "CF": "🇨🇫", "TD": "🇹🇩", "CL": "🇨🇱", "CN": "🇨🇳", "CO": "🇨🇴",
+    "KM": "🇰🇲", "CG": "🇨🇬", "CD": "🇨🇩", "CR": "🇨🇷", "CI": "🇨🇮",
+    "HR": "🇭🇷", "CU": "🇨🇺", "CW": "🇨🇼", "CY": "🇨🇾", "CZ": "🇨🇿",
+    # D
+    "DK": "🇩🇰", "DJ": "🇩🇯", "DM": "🇩🇲", "DO": "🇩🇴",
+    # E
+    "EC": "🇪🇨", "EG": "🇪🇬", "SV": "🇸🇻", "GQ": "🇬🇶", "ER": "🇪🇷",
+    "EE": "🇪🇪", "SZ": "🇸🇿", "ET": "🇪🇹",
+    # F
+    "FK": "🇫🇰", "FO": "🇫🇴", "FJ": "🇫🇯", "FI": "🇫🇮", "FR": "🇫🇷",
+    "GF": "🇬🇫", "PF": "🇵🇫",
+    # G
+    "GA": "🇬🇦", "GM": "🇬🇲", "GE": "🇬🇪", "DE": "🇩🇪", "GH": "🇬🇭",
+    "GI": "🇬🇮", "GR": "🇬🇷", "GL": "🇬🇱", "GD": "🇬🇩", "GP": "🇬🇵",
+    "GU": "🇬🇺", "GT": "🇬🇹", "GG": "🇬🇬", "GN": "🇬🇳", "GW": "🇬🇼",
+    "GY": "🇬🇾",
+    # H
+    "HT": "🇭🇹", "HN": "🇭🇳", "HK": "🇭🇰", "HU": "🇭🇺",
+    # I
+    "IS": "🇮🇸", "IN": "🇮🇳", "ID": "🇮🇩", "IR": "🇮🇷", "IQ": "🇮🇶",
+    "IE": "🇮🇪", "IM": "🇮🇲", "IL": "🇮🇱", "IT": "🇮🇹",
+    # J
+    "JM": "🇯🇲", "JP": "🇯🇵", "JE": "🇯🇪", "JO": "🇯🇴",
+    # K
+    "KZ": "🇰🇿", "KE": "🇰🇪", "KI": "🇰🇮", "KP": "🇰🇵", "KR": "🇰🇷",
+    "KW": "🇰🇼", "KG": "🇰🇬",
+    # L
+    "LA": "🇱🇦", "LV": "🇱🇻", "LB": "🇱🇧", "LS": "🇱🇸", "LR": "🇱🇷",
+    "LY": "🇱🇾", "LI": "🇱🇮", "LT": "🇱🇹", "LU": "🇱🇺",
+    # M
+    "MO": "🇲🇴", "MG": "🇲🇬", "MW": "🇲🇼", "MY": "🇲🇾", "MV": "🇲🇻",
+    "ML": "🇲🇱", "MT": "🇲🇹", "MH": "🇲🇭", "MQ": "🇲🇶", "MR": "🇲🇷",
+    "MU": "🇲🇺", "YT": "🇾🇹", "MX": "🇲🇽", "FM": "🇫🇲", "MD": "🇲🇩",
+    "MC": "🇲🇨", "MN": "🇲🇳", "ME": "🇲🇪", "MS": "🇲🇸", "MA": "🇲🇦",
+    "MZ": "🇲🇿", "MM": "🇲🇲",
+    # N
+    "NA": "🇳🇦", "NR": "🇳🇷", "NP": "🇳🇵", "NL": "🇳🇱", "NC": "🇳🇨",
+    "NZ": "🇳🇿", "NI": "🇳🇮", "NE": "🇳🇪", "NG": "🇳🇬", "NU": "🇳🇺",
+    "NF": "🇳🇫", "MK": "🇲🇰", "MP": "🇲🇵", "NO": "🇳🇴",
+    # O
+    "OM": "🇴🇲",
+    # P
+    "PK": "🇵🇰", "PW": "🇵🇼", "PS": "🇵🇸", "PA": "🇵🇦", "PG": "🇵🇬",
+    "PY": "🇵🇾", "PE": "🇵🇪", "PH": "🇵🇭", "PN": "🇵🇳", "PL": "🇵🇱",
+    "PT": "🇵🇹", "PR": "🇵🇷",
+    # Q
+    "QA": "🇶🇦",
+    # R
+    "RE": "🇷🇪", "RO": "🇷🇴", "RU": "🇷🇺", "RW": "🇷🇼",
+    # S
+    "BL": "🇧🇱", "SH": "🇸🇭", "KN": "🇰🇳", "LC": "🇱🇨", "MF": "🇲🇫",
+    "PM": "🇵🇲", "VC": "🇻🇨", "WS": "🇼🇸", "SM": "🇸🇲", "ST": "🇸🇹",
+    "SA": "🇸🇦", "SN": "🇸🇳", "RS": "🇷🇸", "SC": "🇸🇨", "SL": "🇸🇱",
+    "SG": "🇸🇬", "SX": "🇸🇽", "SK": "🇸🇰", "SI": "🇸🇮", "SB": "🇸🇧",
+    "SO": "🇸🇴", "ZA": "🇿🇦", "GS": "🇬🇸", "SS": "🇸🇸", "ES": "🇪🇸",
+    "LK": "🇱🇰", "SD": "🇸🇩", "SR": "🇸🇷", "SJ": "🇸🇯", "SE": "🇸🇪",
+    "CH": "🇨🇭", "SY": "🇸🇾",
+    # T
+    "TW": "🇹🇼", "TJ": "🇹🇯", "TZ": "🇹🇿", "TH": "🇹🇭", "TL": "🇹🇱",
+    "TG": "🇹🇬", "TK": "🇹🇰", "TO": "🇹🇴", "TT": "🇹🇹", "TN": "🇹🇳",
+    "TR": "🇹🇷", "TM": "🇹🇲", "TC": "🇹🇨", "TV": "🇹🇻",
+    # U
+    "UG": "🇺🇬", "UA": "🇺🇦", "AE": "🇦🇪", "GB": "🇬🇧", "UK": "🇬🇧",
+    "US": "🇺🇸", "UM": "🇺🇲", "UY": "🇺🇾", "UZ": "🇺🇿",
+    # V
+    "VU": "🇻🇺", "VE": "🇻🇪", "VN": "🇻🇳", "VG": "🇻🇬", "VI": "🇻🇮",
+    # W
+    "WF": "🇼🇫", "EH": "🇪🇭",
+    # Y
+    "YE": "🇾🇪",
+    # Z
+    "ZM": "🇿🇲", "ZW": "🇿🇼",
 }
 
 # Cache for GeoIP lookups
@@ -65,8 +135,68 @@ def _resolve_hostname(hostname: str) -> Optional[str]:
         return None
 
 
+def _lookup_ip_api(host: str) -> Optional[Dict]:
+    """Try ip-api.com"""
+    try:
+        url = f"http://ip-api.com/json/{host}?fields=status,countryCode,country"
+        req = urllib.request.Request(url, headers={"User-Agent": "LobbyShift/1.0"})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode())
+            if data.get("status") == "success":
+                code = data.get("countryCode", "").upper()
+                if code and code != "??":
+                    return {
+                        "code": code,
+                        "name": data.get("country", "Unknown"),
+                        "flag": COUNTRY_FLAGS.get(code, "🌍")
+                    }
+    except:
+        pass
+    return None
+
+
+def _lookup_ipwho(host: str) -> Optional[Dict]:
+    """Try ipwho.is (free, unlimited)"""
+    try:
+        url = f"https://ipwho.is/{host}"
+        req = urllib.request.Request(url, headers={"User-Agent": "LobbyShift/1.0"})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode())
+            if data.get("success") == True:
+                code = data.get("country_code", "").upper()
+                if code and code != "??":
+                    return {
+                        "code": code,
+                        "name": data.get("country", "Unknown"),
+                        "flag": COUNTRY_FLAGS.get(code, "🌍")
+                    }
+    except:
+        pass
+    return None
+
+
+def _lookup_ipapi_co(host: str) -> Optional[Dict]:
+    """Try ipapi.co (free 1000/day)"""
+    try:
+        url = f"https://ipapi.co/{host}/json/"
+        req = urllib.request.Request(url, headers={"User-Agent": "LobbyShift/1.0"})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            data = json.loads(response.read().decode())
+            if not data.get("error"):
+                code = data.get("country_code", "").upper()
+                if code and code != "??":
+                    return {
+                        "code": code,
+                        "name": data.get("country_name", "Unknown"),
+                        "flag": COUNTRY_FLAGS.get(code, "🌍")
+                    }
+    except:
+        pass
+    return None
+
+
 def lookup_geoip(ip_or_hostname: str) -> Dict:
-    """Lookup country for an IP address using ip-api.com"""
+    """Lookup country for an IP address using multiple GeoIP services"""
     global _geoip_cache
     
     # Load cache on first call
@@ -84,29 +214,28 @@ def lookup_geoip(ip_or_hostname: str) -> Dict:
         else:
             return {"code": "??", "name": "Unknown", "flag": "🌍"}
     
-    # Check cache
+    # Check cache (but skip if result was Unknown)
     if host in _geoip_cache:
-        return _geoip_cache[host]
+        cached = _geoip_cache[host]
+        if cached.get("code") != "??" and cached.get("name") != "Unknown":
+            return cached
     
-    # Query ip-api.com (free, no API key needed)
-    try:
-        url = f"http://ip-api.com/json/{host}?fields=status,countryCode,country"
-        req = urllib.request.Request(url, headers={"User-Agent": "LobbyShift/1.0"})
-        
-        with urllib.request.urlopen(req, timeout=5) as response:
-            data = json.loads(response.read().decode())
-            
-            if data.get("status") == "success":
-                code = data.get("countryCode", "??")
-                result = {
-                    "code": code,
-                    "name": data.get("country", "Unknown"),
-                    "flag": COUNTRY_FLAGS.get(code, "🌍")
-                }
-            else:
-                result = {"code": "??", "name": "Unknown", "flag": "🌍"}
-    except Exception as e:
-        print(f"GeoIP lookup failed for {host}: {e}")
+    # Try multiple GeoIP services in order
+    result = None
+    
+    # 1. Try ip-api.com (fast, free)
+    result = _lookup_ip_api(host)
+    
+    # 2. Fallback to ipwho.is
+    if not result:
+        result = _lookup_ipwho(host)
+    
+    # 3. Fallback to ipapi.co
+    if not result:
+        result = _lookup_ipapi_co(host)
+    
+    # Default if all failed
+    if not result:
         result = {"code": "??", "name": "Unknown", "flag": "🌍"}
     
     # Cache result
@@ -114,6 +243,37 @@ def lookup_geoip(ip_or_hostname: str) -> Dict:
     _save_geoip_cache()
     
     return result
+
+
+def clear_geoip_cache_for_ip(ip: str) -> None:
+    """Clear GeoIP cache for a specific IP to force re-lookup"""
+    global _geoip_cache
+    
+    if not _geoip_cache:
+        _load_geoip_cache()
+    
+    if ip in _geoip_cache:
+        del _geoip_cache[ip]
+        _save_geoip_cache()
+
+
+def clear_all_unknown_from_cache() -> int:
+    """Clear all Unknown entries from cache, return count of cleared entries"""
+    global _geoip_cache
+    
+    if not _geoip_cache:
+        _load_geoip_cache()
+    
+    to_delete = [ip for ip, data in _geoip_cache.items() 
+                 if data.get("code") == "??" or data.get("name") == "Unknown"]
+    
+    for ip in to_delete:
+        del _geoip_cache[ip]
+    
+    if to_delete:
+        _save_geoip_cache()
+    
+    return len(to_delete)
 
 
 class WireGuardManager:
@@ -200,6 +360,14 @@ class WireGuardManager:
         config_path.write_text(modified_content)
         config_path.chmod(0o600)
         
+        # Trigger GeoIP lookup for the new config
+        endpoint = self._extract_endpoint(modified_content)
+        if endpoint and endpoint != "Unknown":
+            # Clear cache for this IP to force fresh lookup
+            clear_geoip_cache_for_ip(endpoint.split(":")[0])
+            # Do the lookup now
+            lookup_geoip(endpoint)
+        
         return config_path
     
     async def update_config(self, name: str, content: str) -> None:
@@ -214,6 +382,12 @@ class WireGuardManager:
         
         config_path.write_text(modified_content)
         config_path.chmod(0o600)
+        
+        # Trigger GeoIP lookup for the updated config
+        endpoint = self._extract_endpoint(modified_content)
+        if endpoint and endpoint != "Unknown":
+            clear_geoip_cache_for_ip(endpoint.split(":")[0])
+            lookup_geoip(endpoint)
         
         # Restart if this config is active
         if self.active_config == name:

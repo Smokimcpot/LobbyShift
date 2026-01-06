@@ -264,6 +264,16 @@ async def api_clear_logs():
     return {"message": "Logs cleared"}
 
 
+@app.delete("/api/geoip-cache")
+async def api_clear_geoip_cache():
+    """Clear GeoIP cache to force re-lookup of all IPs"""
+    from .wireguard import _geoip_cache, _cache_file, _save_geoip_cache
+    _geoip_cache.clear()
+    if _cache_file.exists():
+        _cache_file.unlink()
+    return {"message": "GeoIP cache cleared"}
+
+
 # =============================================================================
 # Settings API
 # =============================================================================
