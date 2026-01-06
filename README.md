@@ -57,9 +57,11 @@ LobbyShift is a **self-hosted tactical VPN gateway** designed to intercept and r
 | 🖥️ **Command Center** | Military-grade web interface with timezone intel |
 | ⭐ **Quick Deploy** | Pin favorite regions for rapid switching |
 | 📜 **Operation Log** | Track all connection history |
-| 🌐 **Auto Detection** | GeoIP identifies VPN server location |
+| 🌐 **Auto Detection** | GeoIP identifies VPN server location with flags |
 | 🎮 **Multi-Platform** | PS5, Xbox Series X|S, PC compatible |
 | 🔒 **OPSEC** | Self-hosted, no data exfiltration |
+| 🏷️ **Custom Names** | Rename regions (e.g. "Bot Lobbies" instead of "mx-free-47") |
+| 🚀 **Autostart** | Auto-connect to preferred region on boot |
 
 ---
 
@@ -75,8 +77,7 @@ LobbyShift is a **self-hosted tactical VPN gateway** designed to intercept and r
 
 > Language selector deployed in top-right corner. Preference persists in browser storage.
 
-Language selection available in the top-right corner of the UI.  
-Your preference is saved automatically.
+---
 
 ## 🔧 SYSTEM ARCHITECTURE
 
@@ -216,6 +217,14 @@ sudo systemctl start lobbyshift
 
 </details>
 
+### Clean Uninstall
+
+```bash
+cd LobbyShift
+chmod +x uninstall.sh
+sudo ./uninstall.sh
+```
+
 ---
 
 ## 📖 FIELD MANUAL
@@ -226,16 +235,13 @@ sudo systemctl start lobbyshift
 http://<SERVER-IP>:8080
 ```
 
-<p align="center">
-  <img src="docs/images/webui.png" alt="LobbyShift Web Interface" width="800">
-</p>
-
 ### 2. Upload VPN Configs
 
 1. Acquire WireGuard configs from VPN provider
 2. Access LobbyShift web interface
 3. Drag & drop `.conf` files to upload zone
 4. System auto-configures split tunneling
+5. Click **🔄 Refresh Flags** if flags don't appear
 
 ### 3. Configure Console
 
@@ -304,6 +310,8 @@ lobbyshift restart
 
 ## 🔌 API ENDPOINTS
 
+### Core Operations
+
 | ENDPOINT | METHOD | OPERATION |
 |----------|--------|-----------|
 | `/api/status` | GET | System status |
@@ -315,11 +323,36 @@ lobbyshift restart
 | `/api/switch/{name}` | POST | Deploy region |
 | `/api/up` | POST | Start VPN |
 | `/api/down` | POST | Stop VPN |
+
+### Favorites
+
+| ENDPOINT | METHOD | OPERATION |
+|----------|--------|-----------|
 | `/api/favorites` | GET | List favorites |
 | `/api/favorites/{name}` | POST | Add to favorites |
 | `/api/favorites/{name}` | DELETE | Remove from favorites |
+
+### Logs
+
+| ENDPOINT | METHOD | OPERATION |
+|----------|--------|-----------|
 | `/api/logs` | GET | Operation history |
 | `/api/logs` | DELETE | Clear history |
+
+### Settings
+
+| ENDPOINT | METHOD | OPERATION |
+|----------|--------|-----------|
+| `/api/settings` | GET | Get all settings |
+| `/api/settings/autostart` | POST | Configure autostart |
+| `/api/settings/config-names` | GET | Get custom names |
+| `/api/settings/config-names` | POST | Save custom names |
+
+### Maintenance
+
+| ENDPOINT | METHOD | OPERATION |
+|----------|--------|-----------|
+| `/api/geoip-cache` | DELETE | Clear GeoIP cache (refresh flags) |
 
 ---
 
@@ -360,6 +393,13 @@ lobbyshift restart
 
 </details>
 
+<details>
+<summary><strong>▶ Flags not showing correctly?</strong></summary>
+
+Click the **🔄 Refresh Flags** button in the VPN Regions section. This clears the GeoIP cache and fetches fresh country data for all configs.
+
+</details>
+
 ---
 
 ## 🛠️ TROUBLESHOOTING
@@ -397,6 +437,81 @@ sudo systemctl status lobbyshift
 sudo ss -tlnp | grep 8080
 ```
 
+### Network Interface Keeps Disconnecting (Link Up/Down)
+
+**SYMPTOM:** Severe lag, Discord disconnects, SSH drops. Check with:
+
+```bash
+sudo dmesg | grep -i "link is"
+# If you see repeated "NIC Link is Down" / "NIC Link is Up" messages, 
+# this is a power management issue.
+```
+
+**CAUSE:** Network card power management (Wake-on-LAN, Energy Efficient Ethernet) causes instability under load.
+
+**QUICK FIX:**
+
+```bash
+# Disable Wake-on-LAN (replace eno1 with your interface)
+sudo ethtool -s eno1 wol d
+
+# Disable Energy Efficient Ethernet (if supported)
+sudo ethtool --set-eee eno1 eee off 2>/dev/null
+
+# Verify
+sudo ethtool eno1 | grep -i "wake\|speed\|link"
+```
+
+> **NOTE:** Find your interface name with `ip link show`
+
+**PERMANENT FIX (survives reboot):**
+
+```bash
+# Create systemd service
+sudo tee /etc/systemd/system/nic-powersave-off.service << 'EOF'
+[Unit]
+Description=Disable NIC Power Management
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/ethtool -s eno1 wol d
+ExecStart=/sbin/ethtool --set-eee eno1 eee off
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Enable and start
+sudo systemctl daemon-reload
+sudo systemctl enable nic-powersave-off
+sudo systemctl start nic-powersave-off
+```
+
+**AFFECTED HARDWARE:** Common on Intel NICs (e1000e driver), especially on HP EliteDesk, Dell OptiPlex, and similar business PCs.
+
+### Flags Not Showing (Globe Icon 🌍)
+
+```bash
+# Clear GeoIP cache via API
+curl -X DELETE http://localhost:8080/api/geoip-cache
+
+# Or click "🔄 Refresh Flags" button in web UI
+
+# Then restart service
+sudo systemctl restart lobbyshift
+```
+
+### High CPU Usage
+
+```bash
+# Check if multiple WireGuard interfaces are running
+sudo wg show
+
+# Should only show ONE interface (lobbyshift)
+# If multiple, run clean uninstall and reinstall
+```
+
 ---
 
 ## 🤝 CONTRIBUTING
@@ -406,7 +521,7 @@ Contributions welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 **AREAS OF INTEREST:**
 - 🐳 Docker containerization
 - 🌐 Additional VPN provider templates
-- 🌍 Localization support
+- 🌍 Additional language localizations
 
 ---
 
@@ -452,5 +567,5 @@ If this project provided value, consider leaving a ⭐
 </p>
 
 <p align="center">
-  <strong>▶ LOBBYSHIFT v1.0 ◀</strong>
+  <strong>▶ LOBBYSHIFT v1.1 ◀</strong>
 </p>
